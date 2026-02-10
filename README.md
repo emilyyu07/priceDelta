@@ -1,5 +1,6 @@
-# PriceDelta 
-*Automated Retail Intelligence Engine*
+# PriceDelta
+
+_Automated Retail Intelligence Engine_
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -22,7 +23,6 @@ PriceDelta is a full-stack market intelligence platform that automates retail pr
 - **End-to-End Type Safety:** Strict type sharing between the Prisma database schema and React frontend ensures runtime reliability.
 - **Performance Optimization:** Uses optimistic UI updates and responsive design with Tailwind CSS.
 
-
 ## ⚙️ System Architecture & Data Pipeline
 
 ### 🏗️ Modular Backend Design
@@ -39,17 +39,16 @@ PriceDelta is a full-stack market intelligence platform that automates retail pr
 
 - **Async Notification Logic:** Developed an independent service that evaluates price changes against watchlists, dispatching email alerts via Nodemailer only when specific thresholds are met.
 
-
 ## 🚀 Tech Stack
 
-### Frontend  
+### Frontend
 
 - **[React (Vite):](https://react.dev/) & [TypeScript:](https://www.typescriptlang.org/)** Modular architecture with strict end-to-end type safety.
 - **[Tailwind CSS:](https://tailwindcss.com/)** Responsive, high-performance styling.
 - **[Axios:](https://axios-http.com/)** Configured with interceptors to handle authenticated API requests and global error management.
 - **[Recharts:](https://recharts.github.io/)** Interactive data visualization for historical price trends.
 
-### Backend  
+### Backend
 
 - **[Node.js](https://nodejs.org/en) & [Express.js:](https://expressjs.com/)** Built a high-concurrency RESTful API using a modular architecture for efficient request handling.
 - **[Prisma ORM:](https://www.prisma.io/) & [PostgreSQL:](https://www.postgresql.org/)** Type-safe ORM with strict relational schema enforcement and automated migrations.
@@ -117,32 +116,49 @@ PriceDelta is a full-stack market intelligence platform that automates retail pr
 ```
 .
 ├── backend/
-│   ├── src/
-│   │   ├── api/             # Frontend API client configurations
-│   │   ├── config/          # Backend configurations (Prisma, mail, scheduler)
-│   │   ├── controllers/     # Business logic for routes
-│   │   ├── middleware/      # Authentication, error handling middleware
-│   │   ├── routes/          # API route definitions
-│   │   ├── workers/         # Background tasks/logic (authenticator, ingestor)
-│   │   └── index.ts         # Main backend entry point
-│   ├── prisma/              # Prisma schema and migrations
-│   └── package.json
-│
+│   ├── .gitignore
+│   ├── nodemon.json
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── generated/           # Generated Prisma client files
+│   ├── node_modules/        # Project dependencies
+│   ├── prisma/              # Prisma schema, migrations
+│   └── src/
+│       ├── config/          # Application configuration
+│       ├── controllers/     # Request handlers
+│       ├── generated/       # Prisma client and model definitions
+│       ├── middleware/      # Express middleware
+│       ├── routes/          # API route definitions
+│       ├── workers/         # Background worker logic
+│       └── index.ts         # Backend entry point
 ├── frontend/
-│   ├── src/
-│   │   ├── api/             # Frontend API client configurations
-│   │   ├── assets/          # Static assets
-│   │   ├── components/      # Reusable UI components (common, dashboard, layout, products)
-│   │   ├── contexts/        # React Context providers (AuthContext)
-│   │   ├── hooks/           # Custom React hooks (useAuth)
-│   │   ├── pages/           # Page-level components
-│   │   ├── services/        # Frontend services (auth.service)
-│   │   ├── types/           # TypeScript interfaces and types
-│   │   ├── utils/           # Utility functions
-│   │   └── main.tsx         # Main frontend entry point
-│   ├── public/
-│   └── package.json
-│
-├── package.json (root)
+│   ├── .gitignore
+│   ├── dev.js
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── tailwind.config.js
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   ├── vite.config.ts
+│   ├── node_modules/        # Project dependencies
+│   ├── public/              # Static assets
+│   └── src/
+│       ├── App.css
+│       ├── App.tsx
+│       ├── index.css
+│       ├── main.tsx         # Frontend entry point
+│       ├── api/             # API client services
+│       ├── assets/          # Images and other static files
+│       ├── components/      # Reusable UI components
+│       ├── contexts/        # React Context providers
+│       ├── hooks/           # Custom React hooks
+│       ├── pages/           # Page-level components
+│       ├── services/        # Frontend business logic services
+│       ├── types/           # TypeScript type definitions
+│       └── utils/           # Utility functions
 └── README.md
 ```
