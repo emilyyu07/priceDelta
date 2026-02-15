@@ -7,7 +7,7 @@ _Automated Retail Intelligence Engine_
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-PriceDelta is a full-stack market intelligence platform that automates retail price tracking, ingesting high-frequency product data, visualizing historical market trends, and execututing real-time alert triggers when prices fluctuate beyond user-defined thresholds.
+PriceDelta is a full-stack market intelligence platform that automates retail price tracking, ingesting high-frequency product data, visualizing historical market trends, and executing real-time alert triggers when prices fluctuate beyond user-defined thresholds.
 
 ## ✨ Key Features
 

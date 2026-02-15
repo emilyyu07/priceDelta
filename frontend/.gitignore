@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# personal info docs
+FRONTEND_OVERVIEW.md
+RESUME_PROJECT_SUMMARY.md
+
+
+

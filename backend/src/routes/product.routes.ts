@@ -34,6 +34,7 @@ router.get("/:id", async (req, res, next) => {
       include: {
         listings: {
           include: {
+            retailer: true,
             priceHistory: {
               orderBy: {
                 timestamp: "asc",

@@ -21,16 +21,18 @@ const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (id) {
-        try {
-          const data = await productsApi.getById(id);
-          setProduct(data);
-        } catch (error) {
-          console.error('Error fetching product:', error);
-          setAlertError('Failed to load product details.');
-        } finally {
-          setLoading(false);
-        }
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await productsApi.getById(id);
+        setProduct(data);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        setAlertError('Failed to load product details.');
+      } finally {
+        setLoading(false);
       }
     };
     fetchProduct();
@@ -75,16 +77,17 @@ const ProductDetailPage: React.FC = () => {
   }
   
   // Find the lowest current price across all listings for display
-  const lowestPriceListing = product.listings.reduce((minListing: ProductListing | null, currentListing: ProductListing) => {
+  const listings = product.listings ?? [];
+  const lowestPriceListing = listings.reduce((minListing: ProductListing | null, currentListing: ProductListing) => {
     const currentPriceNum = parseFloat(currentListing.currentPrice as string);
     const minPriceNum = minListing ? parseFloat(minListing.currentPrice as string) : Infinity;
     return (minPriceNum < currentPriceNum) ? minListing : currentListing;
   }, null);
 
-  const priceData = product.listings.flatMap((listing: ProductListing) => 
-    listing.priceHistory.map((entry: PriceHistory) => ({
+  const priceData = listings.flatMap((listing: ProductListing) => 
+    (listing.priceHistory ?? []).map((entry: PriceHistory) => ({
       date: new Date(entry.timestamp).toLocaleDateString(),
-      [`${listing.retailer.name}`]: parseFloat(entry.price as string) // Parse price for chart
+      [`${listing.retailer?.name ?? 'Unknown'}`]: parseFloat(entry.price as string) // Parse price for chart
     }))
   );
 
@@ -103,7 +106,7 @@ const ProductDetailPage: React.FC = () => {
               <span className="text-3xl font-bold text-primary-600">
                 {lowestPriceListing ? formatCurrency(parseFloat(lowestPriceListing.currentPrice)) : 'N/A'}
               </span>
-              {lowestPriceListing && (
+              {lowestPriceListing?.retailer && (
                 <span className="ml-2 text-lg text-primary-600">at {lowestPriceListing.retailer.name}</span>
               )}
             </div>
@@ -145,8 +148,8 @@ const ProductDetailPage: React.FC = () => {
               <YAxis tickFormatter={(tick) => formatCurrency(tick)} />
               {/*<Tooltip formatter={(value: Decimal) => formatCurrency(value)} /> */}
               <Legend />
-              {product.listings.map((listing: ProductListing) => (
-                <Line key={listing.id} type="monotone" dataKey={listing.retailer.name} stroke="#00BCD4" />
+              {listings.map((listing: ProductListing) => (
+                <Line key={listing.id} type="monotone" dataKey={listing.retailer?.name ?? 'Unknown'} stroke="#00BCD4" />
               ))}
             </LineChart>
           </ResponsiveContainer>

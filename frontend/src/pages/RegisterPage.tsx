@@ -48,8 +48,8 @@ export const RegisterPage: React.FC = () => {
         {/* Logo and branding */}
         <div className="text-center mb-8">
           <TrendingDown className="h-12 w-12 text-primary-500 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-primary-900">PriceTracker</h1>
-          <p className="text-primary-600 mt-2">Create an account to start tracking prices</p>
+          <h1 className="text-3xl font-bold text-primary-900">PriceDelta</h1>
+          <p className="text-primary-600 mt-2">Want to start saving big? Create an account!</p>
         </div>
 
         {/* Registration form */}

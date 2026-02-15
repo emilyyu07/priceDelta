@@ -34,8 +34,8 @@ const Dashboard = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold text-primary-800 mb-4">Welcome, {user?.name || user?.email || 'there'}!</h1>
-            <p className="text-primary-600 mb-6">Welcome to the Price Tracker Dashboard!</p>
+            <h1 className="text-2xl font-bold text-primary-800 mb-4">Welcome back, {user?.name || user?.email || 'there'}!</h1>
+            <p className="text-primary-600 mb-6">We look down so your savings go up. Check out your next big save!</p>
 
             <h2 className="text-xl font-semibold text-primary-700 mb-4">Featured Products</h2>
             {loadingProducts ? (
