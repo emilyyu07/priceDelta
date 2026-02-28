@@ -4,7 +4,6 @@ import type { AuthContextType } from "../contexts/AuthContext";
 
 /**
  * Custom hook to access auth context
- * Must be used within AuthProvider
  */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);

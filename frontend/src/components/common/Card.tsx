@@ -3,14 +3,14 @@ import React from 'react';
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void; // Add optional onClick prop
+  onClick?: () => void; 
 }
 
 export const Card: React.FC<CardProps> = ({ children, className, onClick }) => {
   return (
     <div
       className={`bg-primary-50 p-6 rounded-lg border border-primary-200 shadow-sm ${className}`}
-      onClick={onClick} // Pass onClick to the div
+      onClick={onClick}
     >
       {children}
     </div>
