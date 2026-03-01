@@ -6,7 +6,9 @@ import type { Browser, BrowserContext } from "playwright";
 // keep a single global browser instance alive in memory
 let globalBrowser: Browser | null = null;
 
-export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
+export async function scrapeAritziaPrice(
+  productUrl: string,
+): Promise<{ price: number; imageUrl: string | null }> {
   // initialize the browser only if it doesn't exist yet
   if (!globalBrowser) {
     globalBrowser = await chromium.launch({
@@ -18,7 +20,6 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
   let context: BrowserContext | null = null;
 
   try {
-    // create a fresh, isolated context
     // spoof the User-Agent (so we do not appear as headless)
     context = await globalBrowser.newContext({
       userAgent:
@@ -32,7 +33,6 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
     const page = await context.newPage();
 
     // navigate to the Aritzia product URL
-    console.log(`Navigating to: ${productUrl}`);
     await page.goto(productUrl, {
       waitUntil: "domcontentloaded",
       timeout: 30000,
@@ -77,12 +77,27 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
       throw new Error(`Failed to parse price string: ${rawPriceText}`);
     }
 
-    return cleanPrice;
+    // extract image URL
+    let imageUrl: string | null = null;
+    try {
+      // search for open graph img tage in <head>
+      imageUrl = await page
+        .locator('meta[property="og:image"]')
+        .getAttribute("content");
+      console.log(`Found product imageL ${imageUrl}`);
+    } catch (err) {
+      console.warn("Could not find og:image meta tag.");
+    }
+
+    return {
+      price: cleanPrice,
+      imageUrl: imageUrl,
+    };
   } catch (error) {
     console.error(`Failed to scrape Aritzia: ${productUrl}`, error);
     throw new Error("Scrape failed. Target is blocking.");
   } finally {
-    // cleanup - close the context, even if the scrape fails.
+    // cleanup - close the context even if the scrape fails
     if (context) {
       await context.close();
     }

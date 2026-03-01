@@ -1,20 +1,43 @@
 import { Router } from "express";
-import { trackProduct } from "../controllers/product.controller.js";
+import {
+  getTrackStatus,
+  trackProduct,
+} from "../controllers/product.controller";
 import prisma from "../config/prisma.js";
 const router = Router();
 
 router.post("/track", trackProduct);
+
+// polling
+router.get("/track/:listingId/status", getTrackStatus);
+
 // get all products (browsing page)
 router.get("/", async (_req, res, next) => {
   try {
     const products = await prisma.product.findMany({
-      include: {
+      select: {
+        id: true,
+        externalId: true,
+        title: true,
+        description: true,
+        category: true,
+        imageUrl: true,
+        createdAt: true,
+        updatedAt: true,
         listings: {
           select: {
+            id: true,
+            productId: true,
+            retailerId: true,
             currentPrice: true,
+            url: true,
+            isActive: true,
             retailer: {
               select: {
+                id: true,
                 name: true,
+                apiUrl: true,
+                isActive: true,
               },
             },
           },
@@ -33,7 +56,15 @@ router.get("/:id", async (req, res, next) => {
     const id = req.params.id;
     const product = await prisma.product.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        externalId: true,
+        title: true,
+        description: true,
+        category: true,
+        imageUrl: true,
+        createdAt: true,
+        updatedAt: true,
         listings: {
           include: {
             retailer: true,

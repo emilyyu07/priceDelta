@@ -1,14 +1,26 @@
 import prisma from "../config/prisma.js";
 
-export async function saveScrapedPrice(listingId: string, newPrice: number) {
+export async function saveScrapedPrice(
+  listingId: string,
+  newPrice: number,
+  imageUrl?: string,
+) {
   try {
     // Start the transaction
     await prisma.$transaction(async (tx) => {
       // 1. UPDATE the current price on the listing
-      await tx.productListing.update({
+      const updatedListing = await tx.productListing.update({
         where: { id: listingId },
-        data: { currentPrice: newPrice },
+        data: { currentPrice: newPrice, isActive: true },
+        include: { product: true },
       });
+
+      if (imageUrl) {
+        await tx.product.update({
+          where: { id: updatedListing.productId },
+          data: { imageUrl: imageUrl },
+        });
+      }
 
       // 2. INSERT the new datapoint into the history graph
       await tx.priceHistory.create({

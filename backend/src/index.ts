@@ -1,14 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { initScheduledJobs } from "./config/scheduler.js";
-import healthRoutes from "./routes/health.routes.js";
-import productRoutes from "./routes/product.routes.js";
-import alertRoutes from "./routes/alert.routes.js";
-import ingestRoutes from "./routes/ingest.routes.js";
-import authRoutes from "./routes/auth.routes.js";
-import userRoutes from "./routes/user.routes.js";
-import notificationRoutes from "./routes/notification.routes.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+import { initScheduledJobs } from "./config/scheduler";
+import healthRoutes from "./routes/health.routes";
+import productRoutes from "./routes/product.routes";
+import alertRoutes from "./routes/alert.routes";
+import authRoutes from "./routes/auth.routes";
+import userRoutes from "./routes/user.routes";
+import notificationRoutes from "./routes/notification.routes";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app = express(); //initialize express application
 const PORT = process.env.PORT || 3001;
@@ -24,7 +23,6 @@ app.use(express.json());
 app.use("/health", healthRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/alerts", alertRoutes);
-app.use("/api/ingest", ingestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/notifications", notificationRoutes);

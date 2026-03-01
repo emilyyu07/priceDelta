@@ -1,7 +1,7 @@
 import { Queue, Worker, Job } from "bullmq";
 import IORedis from "ioredis";
 import { scrapeAritziaPrice } from "../workers/scrapers/aritziaScraper";
-import { saveScrapedPrice } from "../services/priceService";
+import { saveScrapedPrice } from "../services/price.service";
 
 // establish connection to local Docker Redis
 const redisConnectionOptions = {
@@ -24,13 +24,16 @@ const scrapeWorker = new Worker(
 
     console.log(`[Worker] Picked up job ${job.id} for listing ${listingId}`);
 
-    // Step A: Run Playwright
-    const currentPrice = await scrapeAritziaPrice(productUrl);
+    //run Playwright
+    const scrapeResult = await scrapeAritziaPrice(productUrl);
 
-    // Step B: Save to PostgreSQL safely
-    await saveScrapedPrice(listingId, currentPrice);
+    const newPrice = scrapeResult.price;
+    const imageUrl = scrapeResult.imageUrl ?? undefined;
 
-    return currentPrice;
+    //save to PostgreSQL
+    await saveScrapedPrice(listingId, newPrice, imageUrl);
+
+    return scrapeResult;
   },
   {
     connection: redisConnectionOptions,

@@ -75,3 +75,35 @@ export const trackProduct = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getTrackStatus = async (req: Request, res: Response) => {
+  try {
+    const listingId = Array.isArray(req.params.listingId)
+      ? req.params.listingId[0]
+      : req.params.listingId;
+
+    // find listing in database
+    const listing = await prisma.productListing.findUnique({
+      where: { id: listingId },
+    });
+
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    // check if pending
+    if (!listing.isActive) {
+      return res.status(200).json({ status: "PENDING" });
+    }
+
+    // check if done
+    return res.status(200).json({
+      status: "COMPLETED",
+      productId: listing.productId,
+      price: listing.currentPrice,
+    });
+  } catch (error: any) {
+    console.error("Status Check Error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
