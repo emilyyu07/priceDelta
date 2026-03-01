@@ -10,7 +10,7 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
   // initialize the browser only if it doesn't exist yet
   if (!globalBrowser) {
     globalBrowser = await chromium.launch({
-      headless: true, // run headless on the server
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for Linux servers/Docker
     });
   }
@@ -18,7 +18,7 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
   let context: BrowserContext | null = null;
 
   try {
-    // cCreate a fresh, isolated context
+    // create a fresh, isolated context
     // spoof the User-Agent (so we do not appear as headless)
     context = await globalBrowser.newContext({
       userAgent:
@@ -32,31 +32,34 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
     const page = await context.newPage();
 
     // navigate to the Aritzia product URL
+    console.log(`Navigating to: ${productUrl}`);
     await page.goto(productUrl, {
       waitUntil: "domcontentloaded",
       timeout: 30000,
     });
 
     // DOM Extraction
-
-    await page
-      .waitForSelector(".product-detail", { timeout: 10000 })
-      .catch(() => null);
+    await page.waitForSelector(
+      '[data-testid="product-list-price-text"], [data-testid="product-list-sale-text"]',
+      { timeout: 15000 },
+    );
 
     let rawPriceText = "";
 
     // always check for the SALE price first
-    const saleLocator = page.locator("#product-list-sale-text");
+    const saleLocator = page.getByTestId("product-list-sale-text");
 
     if ((await saleLocator.count()) > 0) {
-      // The product is on sale!
+      // product is on sale
       rawPriceText = await saleLocator.first().innerText();
+      console.log(`Found SALE price: ${rawPriceText}`);
     } else {
       // if not, check for the REGULAR price
-      const regularLocator = page.locator("#product-list-price-text");
+      const regularLocator = page.getByTestId("product-list-price-text");
 
       if ((await regularLocator.count()) > 0) {
         rawPriceText = await regularLocator.first().innerText();
+        console.log(`Found REGULAR price: ${rawPriceText}`);
       } else {
         // fallback: DOM changed, we cannot locate price
         throw new Error(
@@ -64,6 +67,8 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
         );
       }
     }
+
+    console.log(`Successfully extracted raw price string: ${rawPriceText}`);
 
     // strip raw price text
     const cleanPrice = parseFloat(rawPriceText.replace(/[^0-9.]/g, ""));
@@ -77,7 +82,7 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
     console.error(`Failed to scrape Aritzia: ${productUrl}`, error);
     throw new Error("Scrape failed. Target is blocking.");
   } finally {
-    // MANDATORY CLEANUP: close the context, even if the scrape fails.
+    // cleanup - close the context, even if the scrape fails.
     if (context) {
       await context.close();
     }
