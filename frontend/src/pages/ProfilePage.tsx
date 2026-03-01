@@ -48,7 +48,7 @@ export const ProfilePage: React.FC = () => {
     <div className="container mx-auto p-4">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primary-900 mb-2">Profile</h1>
-        <p className="text-primary-600">Manage your account settings</p>
+        <p className="text-primary-600">The person behind the savings.</p>
       </div>
 
       <Card> {/* Wrap content in Card for consistent styling */}
@@ -61,7 +61,7 @@ export const ProfilePage: React.FC = () => {
             disabled
             className="cursor-not-allowed bg-primary-100"
           />
-          <p className="text-xs text-primary-500 mt-1">Email cannot be changed</p>
+          <p className="text-xs text-primary-500 mt-1">Email is locked in — like your commitment to a good deal.</p>
         </div>
 
         <div className="mb-6">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import { AlertCircle, Trash2 } from 'lucide-react';
 import { alertsApi } from '../api/alerts';
 import { Card } from '../components/common/Card';
@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export const AlertsPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,13 +66,13 @@ export const AlertsPage: React.FC = () => {
         <Card className="text-center py-8">
           <AlertCircle className="h-12 w-12 text-primary-400 mx-auto mb-4" />
           <p className="text-primary-600 mb-4">
-            You don't have any active alerts yet.
+            Your watchlist is empty. Let's give it something to do.
           </p>
           <p className="text-sm text-primary-500">
-            Browse products and set up alerts to get notified when prices drop!
+            Tell us what you want. We'll tell you when it's acutally worth buying.
           </p>
-          <Button onClick={() => navigate('/products')} className="mt-4">
-            Browse Products
+          <Button onClick={() => navigate('/dashboard')} className="mt-4">
+            Browse New Items
           </Button>
         </Card>
       ) : (

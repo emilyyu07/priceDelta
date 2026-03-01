@@ -49,7 +49,7 @@ export const NotificationsPage: React.FC = () => {
     <div className="container mx-auto p-4">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-primary-900 mb-2">Notifications</h1>
-        <p className="text-primary-600">Stay updated on price changes</p>
+        <p className="text-primary-600">The news that actually saves you money.</p>
       </div>
 
       {loading ? (
@@ -60,10 +60,10 @@ export const NotificationsPage: React.FC = () => {
         <Card className="text-center py-8">
           <Bell className="h-12 w-12 text-primary-400 mx-auto mb-4" />
           <p className="text-primary-600 mb-4">
-            No notifications yet.
+            All quiet on the savings front.
           </p>
           <p className="text-sm text-primary-500">
-            You'll receive notifications here when prices drop on your tracked products.
+            Price drops don't sneak past us. When your moment arrives, you'll be the first to know.
           </p>
         </Card>
       ) : (

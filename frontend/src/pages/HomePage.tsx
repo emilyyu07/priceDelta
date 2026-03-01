@@ -45,13 +45,13 @@ export const HomePage: React.FC = () => {
     <div>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-lg p-8 text-white mb-8">
-        <h1 className="text-4xl font-bold mb-4">Smart tracking, smarter spending.</h1>
-        <p className="text-xl mb-6">Get notified when prices drop on your favorite products! It's that easy.</p>
+        <h1 className="text-4xl font-bold mb-4">Your prices — on a leash. </h1>
+        <p className="text-xl mb-6">Set your price. We'll do the stalking.</p>
         <Link
           to="/products"
           className="inline-block bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
         >
-          Start Browsing
+          Start Saving
         </Link>
       </div>
 
@@ -71,7 +71,7 @@ export const HomePage: React.FC = () => {
         <div className="bg-primary-50 p-6 rounded-lg border border-primary-200 hover:shadow-lg transition">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Price Drops</h3>
-            <TrendingDown className="h-6 w-6 text-green-600" />
+            <TrendingDown className="h-6 w-6 text-primary-600" />
           </div>
           <p className="text-3xl font-bold text-primary-900">
             {statsLoading ? '…' : !isAuthenticated ? '—' : priceDropsCount}
@@ -82,7 +82,7 @@ export const HomePage: React.FC = () => {
         <div className="bg-primary-50 p-6 rounded-lg border border-primary-200 hover:shadow-lg transition">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Deals Notified</h3>
-            <Tag className="h-6 w-6 text-purple-600" />
+            <Tag className="h-6 w-6 text-primary-600" />
           </div>
           <p className="text-3xl font-bold text-primary-900">
             {statsLoading ? '…' : !isAuthenticated ? '—' : dealsNotifiedCount}

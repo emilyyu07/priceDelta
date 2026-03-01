@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { useAuth } from "../../hooks/useAuth";
 import { ProductGrid } from "../products/ProductGrid";
 import { productsApi } from "../../api/products.js";
+import {ProductTracker} from "./ProductTracker";
 import type { Product } from "../../types/index.js";
 
 const Dashboard = () => {
@@ -29,7 +30,7 @@ const Dashboard = () => {
     }, []);
 
     const handleProductClick = (productId: string) => {
-      navigate(`/products/${productId}`); // Use navigate for programmatic navigation
+      navigate(`/products/${productId}`); 
     };
 
     return (
@@ -37,7 +38,9 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold text-primary-800 mb-4">Welcome back, {user?.name || user?.email || 'there'}!</h1>
             <p className="text-primary-600 mb-6">We look down so your savings go up. Check out your next big save!</p>
 
-            <h2 className="text-xl font-semibold text-primary-700 mb-4">Featured Products</h2>
+            <ProductTracker />
+
+            <h2 className="text-xl font-semibold text-primary-700 mb-4">Previously Searched Items</h2>
             {loadingProducts ? (
                 <p className="text-primary-600">Loading products...</p>
             ) : error ? (

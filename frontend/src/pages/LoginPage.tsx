@@ -43,7 +43,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center mb-8">
           <TrendingDown className="h-12 w-12 text-primary-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-primary-900">PriceDelta</h1>
-          <p className="text-primary-600 mt-2">Catch the drop. Keep the savings.</p>
+          <p className="text-primary-600 mt-2">Your wallet called. It wants a smarter you.</p>
         </div>
 
         {/* Login form */}

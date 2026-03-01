@@ -23,7 +23,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
 
   return (
     <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200" onClick={() => onClick(product.id)}>
-      <img src={imageUrl} alt={product.title} className="w-full h-48 object-cover rounded-md mb-4" />
+      <img src={imageUrl} alt={product.title} className="w-full h-64 object-cover rounded-md mb-4" />
       <h3 className="text-lg font-semibold text-primary-800 mb-2">{product.title}</h3>
       {product.category && (
         <p className="text-sm text-primary-500 mb-2">{product.category}</p>
