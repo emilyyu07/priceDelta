@@ -1,4 +1,4 @@
-# PriceDelta
+<!-- # PriceDelta
 
 _Automated Retail Intelligence Engine_
 
@@ -161,4 +161,4 @@ PriceDelta is a full-stack market intelligence platform that automates retail pr
 │       ├── types/           # TypeScript type definitions
 │       └── utils/           # Utility functions
 └── README.md
-```
+``` -->
