@@ -11,6 +11,8 @@ export const trackProduct = async (req: Request, res: Response) => {
     const { cleanUrl, externalId } = parseUrl(url);
 
     const storeName = extractStoreName(cleanUrl);
+
+    //ensure retailer exists
     const retailer = await prisma.retailer.upsert({
       where: { name: storeName },
       update: {},
@@ -21,14 +23,36 @@ export const trackProduct = async (req: Request, res: Response) => {
       },
     });
 
+    //ensure product exists
+    const product = await prisma.product.upsert({
+      where: { externalId: externalId },
+      update: {},
+      create: {
+        externalId: externalId,
+        title: `Aritzia Item ${externalId}`, // Placeholder name
+        // optional: description, category, imageUrl
+      },
+    });
+
     // create "pending" Listing in PostgreSQL so we have an ID
-    const listing = await prisma.productListing.create({
-      data: {
+    const listing = await prisma.productListing.upsert({
+      where: {
+        // Prisma generates a special compound key for @@unique([productId, retailerId])
+        productId_retailerId: {
+          productId: product.id,
+          retailerId: retailer.id,
+        },
+      },
+      update: {
         url: cleanUrl,
-        productId: externalId, // assume existing item
+        isActive: false, // Mark as pending for scraper
+      },
+      create: {
+        productId: product.id,
         retailerId: retailer.id,
-        currentPrice: 0, // Placeholder until the worker finishes
-        isActive: false, // Mark as pending
+        currentPrice: 0,
+        url: cleanUrl,
+        isActive: false,
       },
     });
 
@@ -45,11 +69,9 @@ export const trackProduct = async (req: Request, res: Response) => {
       status: "PENDING",
     });
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        error:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      });
+    res.status(400).json({
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    });
   }
 };

@@ -10,7 +10,7 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
   // initialize the browser only if it doesn't exist yet
   if (!globalBrowser) {
     globalBrowser = await chromium.launch({
-      headless: true, // still run headless on the server
+      headless: true, // run headless on the server
       args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for Linux servers/Docker
     });
   }
@@ -75,7 +75,7 @@ export async function scrapeAritziaPrice(productUrl: string): Promise<number> {
     return cleanPrice;
   } catch (error) {
     console.error(`Failed to scrape Aritzia: ${productUrl}`, error);
-    throw new Error("Scrape failed. Target might be blocking us.");
+    throw new Error("Scrape failed. Target is blocking.");
   } finally {
     // MANDATORY CLEANUP: close the context, even if the scrape fails.
     if (context) {

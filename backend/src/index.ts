@@ -36,24 +36,3 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server successfully running at http://localhost:${PORT}/health`);
 });
-
-/*
-Mini update log
-01/04 - finished ingestion cron job
-01/07 - register alert routing and email notifications
-        added a global error handler (ensures a clean JSON error will be 
-        sent to frontend/React with upcoming integration)
-01/09 - testing endpoints
-      --> bug with alert endpoints (some error, might be with nodemailer? figure out tmr), other endpoints successful
-
-01/10 - all endpoints working!, manually triggered ingestion and price drops
-
-
-Next Steps:
-- ensure app.use(cors()) is active for seamless integration with React
-
-
-Optional Add-in (add in automated testing? with Jest?) --> extra add on later
---> unit test for checkAlerts using Jest 
-
-*/
