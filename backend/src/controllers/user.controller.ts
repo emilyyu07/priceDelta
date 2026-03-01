@@ -1,6 +1,6 @@
 import type { Response } from "express";
-import type { AuthRequest } from "../middleware/auth.middleware.js";
-import prisma from "../config/prisma.js"; // Import prisma
+import type { AuthRequest } from "../middleware/auth.middleware";
+import prisma from "../config/prisma";
 
 export const getMe = async (req: AuthRequest, res: Response) => {
   res.status(200).json(req.user);

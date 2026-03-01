@@ -1,7 +1,7 @@
 import { Router } from "express";
-import prisma from "../config/prisma.js";
-import { protect } from "../middleware/auth.middleware.js";
-import type { AuthRequest } from "../middleware/auth.middleware.js";
+import prisma from "../config/prisma";
+import { protect } from "../middleware/auth.middleware";
+import type { AuthRequest } from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -21,7 +21,7 @@ router.get("/", protect, async (req: AuthRequest, res, next) => {
 // MARK a notification as read
 router.patch("/:id/read", protect, async (req: AuthRequest, res, next) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const userId = req.user.id;
 
     const notification = await prisma.notification.findUnique({

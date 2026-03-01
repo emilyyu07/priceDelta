@@ -1,7 +1,8 @@
 import { Router } from "express";
-import prisma from "../config/prisma.js";
-import { protect } from "../middleware/auth.middleware.js";
-import type { AuthRequest } from "../middleware/auth.middleware.js";
+import prisma from "../config/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
+import { protect } from "../middleware/auth.middleware";
+import type { AuthRequest } from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -33,7 +34,7 @@ router.post("/", protect, async (req: AuthRequest, res, next) => {
       data: {
         userId: req.user.id,
         productId: productId,
-        targetPrice: new prisma.Prisma.Decimal(targetPrice),
+        targetPrice: new Decimal(targetPrice),
         isActive: true,
       },
     });
@@ -48,6 +49,11 @@ router.post("/", protect, async (req: AuthRequest, res, next) => {
 router.delete("/:id", protect, async (req: AuthRequest, res, next) => {
   try {
     const { id } = req.params;
+
+    if (!id || Array.isArray(id)) {
+      return res.status(400).json({ message: "Invalid alert ID" });
+    }
+
     const alert = await prisma.priceAlert.findUnique({
       where: { id },
     });

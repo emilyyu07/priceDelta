@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, registerUser } from "../workers/authenticator.js";
+import { loginUser, registerUser } from "../workers/authenticator";
 
 const router = Router();
 

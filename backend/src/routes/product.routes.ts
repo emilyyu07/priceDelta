@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { trackProduct } from "../controllers/product.controller.js";
 import prisma from "../config/prisma.js";
 const router = Router();
 
+router.post("/track", trackProduct);
 // get all products (browsing page)
 router.get("/", async (_req, res, next) => {
   try {
