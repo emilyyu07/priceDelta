@@ -69,7 +69,7 @@ export const AlertsPage: React.FC = () => {
             Your watchlist is empty. Let's give it something to do.
           </p>
           <p className="text-sm text-primary-500">
-            Tell us what you want. We'll tell you when it's acutally worth buying.
+            Tell us what you want. We'll tell you when it's actually worth buying.
           </p>
           <Button onClick={() => navigate('/dashboard')} className="mt-4">
             Browse New Items

@@ -38,6 +38,10 @@ export async function scrapeAritziaPrice(
       timeout: 30000,
     });
 
+    // simulate human delay to avoid firewall block (2-5s)
+    const randomDelay = Math.floor(Math.random() * 3000) + 2000;
+    await page.waitForTimeout(randomDelay);
+
     // DOM Extraction
     await page.waitForSelector(
       '[data-testid="product-list-price-text"], [data-testid="product-list-sale-text"]',

@@ -6,8 +6,7 @@ import { Layout } from './components/layout/Layout';
 // Import all page components
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-import { HomePage } from './pages/HomePage';
-import DashboardPage from './pages/DashboardPage';
+import Dashboard from './components/dashboard/Dashboard';
 import { ProductsPage } from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import { AlertsPage } from './pages/AlertsPage';
@@ -52,24 +51,16 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/home" replace /> : <RegisterPage />} />
-        <Route path="/" element={isAuthenticated ? <Navigate to="/home" replace /> : <LoginPage />} /> {/* Default route */}
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} /> {/* Default route */}
 
         {/* Protected Routes */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
@@ -115,7 +106,7 @@ const App: React.FC = () => {
         />
 
         {/* Fallback for unknown routes */}
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/home" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
       </Routes>
     </BrowserRouter>
   );

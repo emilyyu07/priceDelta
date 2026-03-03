@@ -37,7 +37,7 @@ const scrapeWorker = new Worker(
   },
   {
     connection: redisConnectionOptions,
-    concurrency: 2, // ensures Playwright only runs 2 browsers at a time (protects RAM)
+    concurrency: 1, // ensures Playwright only runs 1 browser at a time (protects RAM and prevents access denied)
   },
 );
 

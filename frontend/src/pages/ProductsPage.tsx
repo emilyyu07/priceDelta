@@ -42,7 +42,7 @@ export const ProductsPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary-900 mb-4">Browse Products</h1>
+        <h1 className="text-3xl font-bold text-primary-900 mb-4">Browse Tracked Products</h1>
         
         {/* Search Bar */}
         <div className="flex gap-4 mb-6">

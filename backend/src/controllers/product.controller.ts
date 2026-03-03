@@ -30,6 +30,7 @@ export const trackProduct = async (req: Request, res: Response) => {
       create: {
         externalId: externalId,
         title: `Aritzia Item ${externalId}`, // Placeholder name
+        url: cleanUrl,
         // optional: description, category, imageUrl
       },
     });
