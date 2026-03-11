@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   getTrackStatus,
   trackProduct,
+  getQueueHealth,
+  clearStuckJobs,
 } from "../controllers/product.controller";
 import prisma from "../config/prisma.js";
 const router = Router();
@@ -97,5 +99,9 @@ router.get("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+// Debugging and monitoring endpoints
+router.get("/health", getQueueHealth);
+router.post("/clear-stuck-jobs", clearStuckJobs);
 
 export default router;

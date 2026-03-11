@@ -29,17 +29,58 @@ const scrapeWorker = new Worker(
 
     const newPrice = scrapeResult.price;
     const imageUrl = scrapeResult.imageUrl ?? undefined;
+    const title = scrapeResult.title ?? undefined;
 
     //save to PostgreSQL
-    await saveScrapedPrice(listingId, newPrice, imageUrl);
+    await saveScrapedPrice(listingId, newPrice, imageUrl, title);
 
     return scrapeResult;
   },
   {
     connection: redisConnectionOptions,
-    concurrency: 1, // ensures Playwright only runs 1 browser at a time (protects RAM and prevents access denied)
+    concurrency: 1, // Reduced to 1 to avoid anti-scraping detection
   },
 );
+
+// Add comprehensive logging and monitoring
+scrapeWorker.on("completed", (job) => {
+  console.log(`✅ [Worker] Job ${job.id} completed successfully`);
+});
+
+scrapeWorker.on("failed", (job, err) => {
+  console.error(`❌ [Worker] Job ${job?.id} failed:`, err.message);
+  if (job?.data) {
+    console.error(`Failed URL: ${job.data.productUrl}`);
+    console.error(`Listing ID: ${job.data.listingId}`);
+  }
+});
+
+scrapeWorker.on("error", (err) => {
+  console.error(`🚨 [Worker] Worker error:`, err);
+});
+
+// Add queue monitoring
+setInterval(async () => {
+  try {
+    const waiting = await scrapeQueue.getWaiting();
+    const active = await scrapeQueue.getActive();
+    const completed = await scrapeQueue.getCompleted();
+    const failed = await scrapeQueue.getFailed();
+
+    console.log(
+      `📊 [Queue Status] Waiting: ${waiting.length}, Active: ${active.length}, Completed: ${completed.length}, Failed: ${failed.length}`,
+    );
+
+    // Alert if queue is backing up
+    if (waiting.length > 5) {
+      console.warn(
+        `⚠️ [Queue Alert] ${waiting.length} jobs waiting - possible bottleneck`,
+      );
+    }
+  } catch (error) {
+    console.error(`❌ [Queue Monitoring] Error:`, error);
+  }
+}, 10000); // Every 10 seconds
 
 scrapeWorker.on("failed", (job, err) => {
   console.error(`[Worker] Job ${job?.id} failed:`, err.message);

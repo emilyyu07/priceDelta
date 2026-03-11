@@ -5,6 +5,7 @@ export async function saveScrapedPrice(
   listingId: string,
   newPrice: number,
   imageUrl?: string,
+  title?: string,
 ) {
   try {
     let productId: string = "";
@@ -24,6 +25,13 @@ export async function saveScrapedPrice(
         await tx.product.update({
           where: { id: updatedListing.productId },
           data: { imageUrl: imageUrl },
+        });
+      }
+
+      if (title) {
+        await tx.product.update({
+          where: { id: updatedListing.productId },
+          data: { title: title },
         });
       }
 

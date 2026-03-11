@@ -107,3 +107,70 @@ export const getTrackStatus = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getQueueHealth = async (_req: Request, res: Response) => {
+  try {
+    // Check queue status
+    const waiting = await scrapeQueue.getWaiting();
+    const active = await scrapeQueue.getActive();
+    const completed = await scrapeQueue.getCompleted();
+    const failed = await scrapeQueue.getFailed();
+
+    // Check database connection
+    const dbStatus = await prisma.$queryRaw`SELECT 1 as status`;
+
+    // Check Redis connection by trying to get queue info
+    let redisStatus = "connected";
+    try {
+      await scrapeQueue.getWaiting();
+    } catch (error) {
+      redisStatus = "disconnected";
+    }
+
+    res.json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      queue: {
+        waiting: waiting.length,
+        active: active.length,
+        completed: completed.length,
+        failed: failed.length,
+      },
+      database: dbStatus ? "connected" : "disconnected",
+      redis: redisStatus,
+    });
+  } catch (error: any) {
+    console.error("Health Check Error:", error);
+    res.status(500).json({
+      status: "unhealthy",
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const clearStuckJobs = async (_req: Request, res: Response) => {
+  try {
+    // Clear all jobs in queue
+    await scrapeQueue.obliterate({ force: true });
+
+    // Update stuck listings to active=false
+    await prisma.productListing.updateMany({
+      where: {
+        isActive: false,
+        createdAt: {
+          lt: new Date(Date.now() - 10 * 60 * 1000), // Older than 10 minutes
+        },
+      },
+      data: { isActive: false },
+    });
+
+    res.json({
+      message: "Queue cleared and stuck listings reset",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error("Clear Jobs Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
