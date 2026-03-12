@@ -9,9 +9,26 @@ export const registerUser = async (email: string, password: string) => {
   if (!JWT_SECRET) {
     throw new Error("Internal servor issue: JWT Secret is missing.");
   }
+
+  // Normalize email to lowercase for consistency
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!normalizedEmail || !password) {
+    throw new Error("Email and password are required.");
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+    select: { id: true },
+  });
+
+  if (existingUser) {
+    throw new Error("An account with this email already exists.");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.user.create({
-    data: { email, password: hashedPassword },
+    data: { email: normalizedEmail, password: hashedPassword },
     select: { id: true, email: true },
   });
 
@@ -25,7 +42,17 @@ export const loginUser = async (email: string, password: string) => {
   if (!JWT_SECRET) {
     throw new Error("Internal servor issue: JWT Secret is missing.");
   }
-  const user = await prisma.user.findUnique({ where: { email } });
+
+  // Normalize email to lowercase for case-insensitive lookup
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!normalizedEmail || !password) {
+    throw new Error("Email and password are required.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
   if (!user) {
     throw new Error("Invalid credentials.");
   }

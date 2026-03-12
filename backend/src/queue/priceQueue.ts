@@ -1,12 +1,18 @@
+import "dotenv/config";
 import { Queue, Worker, Job } from "bullmq";
-import IORedis from "ioredis";
 import { scrapeAritziaPrice } from "../workers/scrapers/aritziaScraper";
 import { saveScrapedPrice } from "../services/price.service";
 
-// establish connection to local Docker Redis
+const redisPort = Number(process.env.REDIS_PORT || "6379");
+
+if (Number.isNaN(redisPort)) {
+  throw new Error("REDIS_PORT must be a valid number.");
+}
+
+// establish connection to Redis
 const redisConnectionOptions = {
-  host: "127.0.0.1",
-  port: 6379,
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: redisPort,
   maxRetriesPerRequest: null,
 };
 
