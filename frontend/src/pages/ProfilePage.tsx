@@ -51,7 +51,7 @@ export const ProfilePage: React.FC = () => {
         <p className="text-primary-600">The person behind the savings.</p>
       </div>
 
-      <Card> {/* Wrap content in Card for consistent styling */}
+      <Card className="frosted-surface"> {/* Wrap content in Card for consistent styling */}
         <div className="mb-6">
           <Input
             id="email"

@@ -112,7 +112,6 @@ interface AnimatedHeaderProps {
 
 export const AnimatedHeader: React.FC<AnimatedHeaderProps> = ({ children, className = '' }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -249,31 +248,40 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
   const [currentValue, setCurrentValue] = useState(0);
 
   useEffect(() => {
-    if (animated) {
-      const timer = setTimeout(() => {
-        const duration = 1500;
-        const steps = 60;
-        const increment = value / steps;
-        let current = 0;
-
-        const counter = setInterval(() => {
-          current += increment;
-          if (current >= value) {
-            setCurrentValue(value);
-            clearInterval(counter);
-          } else {
-            setCurrentValue(current);
-          }
-        }, duration / steps);
-
-        return () => clearInterval(counter);
-      }, 200);
-    } else {
-      setCurrentValue(value);
+    if (!animated) {
+      return undefined;
     }
+
+    const duration = 1500;
+    const steps = 60;
+    const increment = value / steps;
+    let current = 0;
+    let counter: ReturnType<typeof setInterval> | undefined;
+
+    const timer = setTimeout(() => {
+      counter = setInterval(() => {
+        current += increment;
+        if (current >= value) {
+          setCurrentValue(value);
+          if (counter) {
+            clearInterval(counter);
+          }
+        } else {
+          setCurrentValue(current);
+        }
+      }, duration / steps);
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      if (counter) {
+        clearInterval(counter);
+      }
+    };
   }, [value, animated]);
 
-  const percentage = (currentValue / max) * 100;
+  const displayValue = animated ? currentValue : value;
+  const percentage = (displayValue / max) * 100;
 
   return (
     <div className="w-full">

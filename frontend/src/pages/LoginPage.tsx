@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { Card } from '../components/common/Card';
+import { AmbientBackground } from '../components/layout/AmbientBackground';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -31,49 +32,44 @@ export const LoginPage: React.FC = () => {
     try {
       await login(email, password);
     } catch (error) {
-        if (error instanceof Error){
-            console.log(error.message);
-        }else{
-            console.log("Unknown error: ",error);
-        }
-        setError("Login failed. Please try again.");
+      if (error instanceof Error) {
+        console.log(error.message);
+        setError(error.message);
+      } else {
+        console.log("Unknown error: ", error);
+        setError("An unknown login error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-background overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-32 h-32 bg-primary-200/20 rounded-full blur-2xl transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-60' : '-translate-y-10 opacity-0'}`}></div>
-        <div className={`absolute bottom-20 right-10 w-40 h-40 bg-primary-300/20 rounded-full blur-3xl transition-all duration-1000 delay-200 ${isVisible ? 'translate-y-0 opacity-50' : 'translate-y-10 opacity-0'}`}></div>
-        <div className={`absolute top-1/2 left-1/4 w-24 h-24 bg-accent-200/20 rounded-full blur-xl transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-40' : '-translate-y-10 opacity-0'}`}></div>
-      </div>
-
-      <div className={`max-w-md w-full relative z-10 transition-all duration-800 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+    <div className="ambient-page flex flex-col items-center justify-center px-4">
+      <AmbientBackground showGlassPane />
+      <div className={`w-full max-w-[28rem] ambient-content ambient-auth-shell transition-all duration-800 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         {/* Logo and branding */}
-        <div className={`text-center mb-8 transition-all duration-800 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <div className={`text-center mb-6 sm:mb-7 transition-all duration-800 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
           <div className="relative inline-block">
             <img 
               src="/favicon.png" 
               alt="PriceDelta" 
-              className={`h-40 w-auto mx-auto mb-4 transition-all duration-1000 delay-300 ${isVisible ? 'scale-100 rotate-0 opacity-100' : 'scale-75 rotate-12 opacity-0'}`}
+              className={`h-28 sm:h-32 w-auto mx-auto mb-3 transition-all duration-1000 delay-300 ${isVisible ? 'scale-100 rotate-0 opacity-100' : 'scale-75 rotate-12 opacity-0'}`}
             />
             {/* Subtle glow effect */}
-            <div className={`absolute inset-0 h-40 w-auto mx-auto mb-4 bg-primary-400/20 rounded-full blur-xl transition-all duration-1000 delay-400 ${isVisible ? 'scale-150 opacity-60' : 'scale-100 opacity-0'}`}></div>
+            <div className={`absolute inset-0 h-28 sm:h-32 w-auto mx-auto mb-3 bg-primary-400/20 rounded-full blur-xl transition-all duration-1000 delay-400 ${isVisible ? 'scale-150 opacity-60' : 'scale-100 opacity-0'}`}></div>
           </div>
-          <h1 className={`text-3xl font-bold font-chic text-primary-900 transition-all duration-800 delay-400 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+          <h1 className={`text-[2rem] sm:text-[2.2rem] leading-tight font-bold font-chic text-primary-900 transition-all duration-800 delay-400 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
             PriceDelta
           </h1>
-          <p className={`text-primary-600 mt-2 font-sleek transition-all duration-800 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'}`}>
+          <p className={`text-sm sm:text-base text-primary-600 mt-2 font-sleek transition-all duration-800 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'}`}>
             Your wallet called. It wants a smarter you.
           </p>
         </div>
 
         {/* Login form */}
-        <Card className={`transition-all duration-800 delay-600 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-6 opacity-0 scale-95'}`}>
-          <h2 className="text-2xl font-bold font-chic text-primary-800 mb-6">Sign In</h2>
+        <Card className={`ambient-auth-card transition-all duration-800 delay-600 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-6 opacity-0 scale-95'}`}>
+          <h2 className="text-[1.7rem] sm:text-2xl font-bold font-chic text-primary-800 mb-5 sm:mb-6">Sign In</h2>
           
           <div className="space-y-4">
             <div className={`transition-all duration-600 delay-700 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>

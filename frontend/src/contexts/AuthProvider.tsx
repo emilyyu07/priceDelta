@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           const userData = await userApi.getMe();
           setUser(userData);
-        } catch (error) {
+        } catch {
           logout();
         }
       }

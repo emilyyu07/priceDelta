@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { Header } from './Header';
+import { AmbientBackground } from './AmbientBackground';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,9 +14,10 @@ interface LayoutProps {
  */
 export const Layout: React.FC<LayoutProps> = ({ children, mainClassName }) => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="ambient-page">
+      <AmbientBackground />
       <Header />
-      <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8 ${mainClassName || ''}`}>
+      <main className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8 ${mainClassName || ''}`}>
         {children}
       </main>
     </div>

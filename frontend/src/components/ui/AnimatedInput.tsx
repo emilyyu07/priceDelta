@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 interface AnimatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -18,12 +18,8 @@ export const AnimatedInput: React.FC<AnimatedInputProps> = ({
   ...props 
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [hasValue, setHasValue] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setHasValue(!!value);
-  }, [value]);
+  const [hasContent, setHasContent] = useState(() => Boolean(value ?? props.defaultValue));
+  const hasValue = value !== undefined ? String(value).length > 0 : hasContent;
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(true);
@@ -36,7 +32,7 @@ export const AnimatedInput: React.FC<AnimatedInputProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHasValue(!!e.target.value);
+    setHasContent(Boolean(e.target.value));
     props.onChange?.(e);
   };
 
@@ -70,7 +66,6 @@ export const AnimatedInput: React.FC<AnimatedInputProps> = ({
       <div className="relative">
         <input
           id={id}
-          ref={inputRef}
           className={inputClasses.trim()}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -140,11 +135,8 @@ export const AnimatedTextArea: React.FC<AnimatedTextAreaProps> = ({
   ...props 
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [hasValue, setHasValue] = useState(false);
-
-  useEffect(() => {
-    setHasValue(!!value);
-  }, [value]);
+  const [hasContent, setHasContent] = useState(() => Boolean(value ?? props.defaultValue));
+  const hasValue = value !== undefined ? String(value).length > 0 : hasContent;
 
   const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
     setIsFocused(true);
@@ -157,7 +149,7 @@ export const AnimatedTextArea: React.FC<AnimatedTextAreaProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setHasValue(!!e.target.value);
+    setHasContent(Boolean(e.target.value));
     props.onChange?.(e);
   };
 

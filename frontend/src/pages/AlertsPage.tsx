@@ -63,7 +63,7 @@ export const AlertsPage: React.FC = () => {
       ) : error ? (
         <div className="text-red-500 text-center py-10">{error}</div>
       ) : alerts.length === 0 ? (
-        <Card className="text-center py-8">
+        <Card className="frosted-surface text-center py-8">
           <AlertCircle className="h-12 w-12 text-primary-400 mx-auto mb-4" />
           <p className="text-primary-600 mb-4">
             Your watchlist is empty. Let's give it something to do.
@@ -78,7 +78,7 @@ export const AlertsPage: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {alerts.map((alert) => (
-            <Card key={alert.id} className="flex items-center justify-between">
+            <Card key={alert.id} className="frosted-surface flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-primary-800">
                   {/* Assuming product is eagerly loaded with the alert */}

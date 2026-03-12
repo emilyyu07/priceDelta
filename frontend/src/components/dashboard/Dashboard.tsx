@@ -23,7 +23,6 @@ const Dashboard = () => {
     const [activeAlertsCount, setActiveAlertsCount] = useState<number>(0);
     const [priceDropsCount, setPriceDropsCount] = useState<number>(0);
     const [dealsNotifiedCount, setDealsNotifiedCount] = useState<number>(0);
-    const [statsLoading, setStatsLoading] = useState(true);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -41,7 +40,6 @@ const Dashboard = () => {
         
         const fetchStats = async () => {
             try {
-                setStatsLoading(true);
                 const [alerts, notifications] = await Promise.all([
                     alertsApi.getAlerts(),
                     notificationsApi.getNotifications(),
@@ -57,7 +55,6 @@ const Dashboard = () => {
                 setPriceDropsCount(0);
                 setDealsNotifiedCount(0);
             } finally {
-                setStatsLoading(false);
             }
         };
         

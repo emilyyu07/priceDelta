@@ -1,23 +1,7 @@
-import React, { createContext, useContext } from 'react';
+import React from 'react';
 import type { ReactNode } from 'react';
 import { useRealTimeNotifications } from '../../hooks/useRealTimeNotifications';
-
-interface NotificationContextType {
-  notifications: any[];
-  unreadCount: number;
-  isConnected: boolean;
-  markAsRead: (id: string) => Promise<void>;
-}
-
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
-
-export const useNotifications = () => {
-  const context = useContext(NotificationContext);
-  if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
-  }
-  return context;
-};
+import { NotificationContext } from './NotificationContext';
 
 interface NotificationProviderProps {
   children: ReactNode;

@@ -22,10 +22,10 @@ export const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
 
   const colorClasses = {
-    primary: 'bg-primary-50 border-primary-200 text-primary-600',
-    accent: 'bg-accent-50 border-accent-200 text-accent-600',
-    success: 'bg-green-50 border-green-200 text-green-600',
-    warning: 'bg-yellow-50 border-yellow-200 text-yellow-600'
+    primary: 'text-primary-600',
+    accent: 'text-accent-600',
+    success: 'text-green-600',
+    warning: 'text-yellow-600'
   };
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export const AnimatedStatCard: React.FC<AnimatedStatCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`p-6 rounded-xl border transition-all duration-700 hover:shadow-lg hover:scale-105 ${colorClasses[color]} ${
+      className={`frosted-surface p-6 rounded-xl border transition-all duration-700 hover:scale-105 ${colorClasses[color]} ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
       }`}
     >

@@ -8,6 +8,11 @@ interface UseBackgroundScrapingOptions {
   pollingInterval?: number;
 }
 
+interface BackgroundScrapingResult {
+  status: "IDLE" | "PENDING" | "COMPLETED" | "FAILED";
+  [key: string]: unknown;
+}
+
 export const useBackgroundScraping = ({
   onStatusChange,
   onProgress,
@@ -53,7 +58,7 @@ export const useBackgroundScraping = ({
   // Enhanced polling with tab switching awareness
   const startPolling = (
     listingId: string,
-    onComplete: (result: any) => void,
+    onComplete: (result: BackgroundScrapingResult) => void,
   ) => {
     let pollCount = 0;
     const maxPolls = 60; // Maximum 3 minutes (60 * 3s)
@@ -68,7 +73,7 @@ export const useBackgroundScraping = ({
         );
 
         const response = await fetch(`/api/products/track/${listingId}/status`);
-        const data = await response.json();
+        const data: BackgroundScrapingResult = await response.json();
 
         // Update progress
         const progress = Math.min((pollCount / 20) * 100, 75); // Cap at 75% until completion

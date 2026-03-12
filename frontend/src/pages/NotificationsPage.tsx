@@ -57,7 +57,7 @@ export const NotificationsPage: React.FC = () => {
       ) : error ? (
         <div className="text-red-500 text-center py-10">{error}</div>
       ) : notifications.length === 0 ? (
-        <Card className="text-center py-8">
+        <Card className="frosted-surface text-center py-8">
           <Bell className="h-12 w-12 text-primary-400 mx-auto mb-4" />
           <p className="text-primary-600 mb-4">
             All quiet on the savings front.
@@ -69,7 +69,7 @@ export const NotificationsPage: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {notifications.map((notification) => (
-            <Card key={notification.id} className="flex items-center justify-between">
+            <Card key={notification.id} className="frosted-surface flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-primary-800">{notification.title}</h3>
                 <p className="text-primary-600">{notification.message}</p>

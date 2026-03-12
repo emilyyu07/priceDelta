@@ -14,17 +14,11 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   duration = 500 
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleExit = () => {
-    setIsVisible(false);
-    setTimeout(() => setShouldRender(false), duration);
-  };
 
   const transitionClasses = {
     slide: {
@@ -50,8 +44,6 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
       exit: 'rotateY-90 opacity-0'
     }
   };
-
-  if (!shouldRender) return null;
 
   return (
     <div
@@ -82,16 +74,8 @@ export const AnimatedModal: React.FC<ModalProps> = ({
   title,
   size = 'md' 
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
   useEffect(() => {
-    if (isOpen) {
-      setIsVisible(true);
-      document.body.style.overflow = 'hidden';
-    } else {
-      setIsVisible(false);
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
 
     return () => {
       document.body.style.overflow = 'unset';
@@ -110,22 +94,22 @@ export const AnimatedModal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
-        className={`
-          absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300
-          ${isVisible ? 'opacity-100' : 'opacity-0'}
-        `}
-        onClick={onClose}
-      />
+        <div
+          className={`
+            absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300
+            opacity-100
+          `}
+          onClick={onClose}
+        />
       
       {/* Modal Content */}
-      <div
-        className={`
-          relative bg-white rounded-2xl shadow-2xl w-full ${sizeClasses[size]}
-          transition-all duration-300 transform-gpu
-          ${isVisible ? 'animate-modal-fade-in' : 'scale-95 opacity-0'}
-        `}
-      >
+        <div
+          className={`
+            relative bg-white rounded-2xl shadow-2xl w-full ${sizeClasses[size]}
+            transition-all duration-300 transform-gpu
+            animate-modal-fade-in
+          `}
+        >
         {title && (
           <div className="flex items-center justify-between p-6 border-b border-primary-200">
             <h2 className="text-xl font-bold font-chic text-primary-800">{title}</h2>

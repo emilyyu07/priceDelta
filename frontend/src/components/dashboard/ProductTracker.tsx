@@ -96,7 +96,7 @@ export const ProductTracker = () => {
 
   // UI Rendering
   return (
-    <div className="bg-gradient-to-br from-surface via-white to-surface p-8 rounded-2xl shadow-xl border border-primary-100 mb-8">
+    <div className="frosted-surface mb-8 rounded-2xl border p-8">
       <div className="mb-6">
         <h2 className="text-2xl font-bold font-chic text-primary-900 mb-2 bg-gradient-to-r from-primary-700 to-primary-900 bg-clip-text text-transparent">
           Track a New Item
@@ -150,7 +150,7 @@ export const ProductTracker = () => {
           </div>
 
           {/* Loading Status */}
-          <div className="flex items-center justify-center gap-4 p-6 bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl border border-primary-200">
+          <div className="frosted-surface flex items-center justify-center gap-4 rounded-xl border p-6">
             <LoadingSpinner size="lg" />
             <div className="text-center">
               <p className="font-semibold text-primary-800 mb-1">

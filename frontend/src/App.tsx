@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { AmbientBackground } from './components/layout/AmbientBackground';
 import { Layout } from './components/layout/Layout';
 
 // Import all page components
@@ -23,8 +24,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary-900">Loading...</div>
+      <div className="ambient-page flex items-center justify-center px-4">
+        <AmbientBackground />
+        <div className="relative z-10 rounded-[28px] border border-white/45 bg-white/30 px-6 py-4 text-primary-900 shadow-[0_20px_60px_rgba(15,52,96,0.18)] backdrop-blur-2xl">
+          Loading...
+        </div>
       </div>
     );
   }
@@ -41,8 +45,11 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary-900">Loading...</div>
+      <div className="ambient-page flex items-center justify-center px-4">
+        <AmbientBackground />
+        <div className="relative z-10 rounded-[28px] border border-white/45 bg-white/30 px-6 py-4 text-primary-900 shadow-[0_20px_60px_rgba(15,52,96,0.18)] backdrop-blur-2xl">
+          Loading...
+        </div>
       </div>
     );
   }
