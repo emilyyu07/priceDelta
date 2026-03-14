@@ -2,11 +2,18 @@ import React from 'react';
 
 interface AmbientBackgroundProps {
   showGlassPane?: boolean;
+  tone?: 'default' | 'soft';
 }
 
-export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({ showGlassPane = false }) => {
+export const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
+  showGlassPane = false,
+  tone = 'default',
+}) => {
   return (
-    <div className="ambient-background" aria-hidden="true">
+    <div
+      className={`ambient-background ${tone === 'soft' ? 'ambient-background--soft' : ''}`}
+      aria-hidden="true"
+    >
       <div className="ambient-background__base" />
       <div className="ambient-background__water ambient-background__water--one" />
       <div className="ambient-background__water ambient-background__water--two" />

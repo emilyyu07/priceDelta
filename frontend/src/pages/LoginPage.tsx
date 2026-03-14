@@ -46,7 +46,7 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="ambient-page flex flex-col items-center justify-center px-4">
-      <AmbientBackground showGlassPane />
+      <AmbientBackground tone="soft" />
       <div className={`w-full max-w-[28rem] ambient-content ambient-auth-shell transition-all duration-800 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         {/* Logo and branding */}
         <div className={`text-center mb-6 sm:mb-7 transition-all duration-800 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>

@@ -19,6 +19,15 @@ const redisConnectionOptions = {
 // create queue
 export const scrapeQueue = new Queue("price-scrape-queue", {
   connection: redisConnectionOptions,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: {
+      type: "exponential",
+      delay: 10000,
+    },
+    removeOnComplete: 100,
+    removeOnFail: 100,
+  },
 });
 
 // create the Worker

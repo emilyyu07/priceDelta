@@ -401,6 +401,12 @@ h1 {
     linear-gradient(180deg, rgba(237, 242, 249, 0.94) 0%, rgba(223, 240, 251, 0.88) 52%, rgba(237, 242, 249, 0.96) 100%);
 }
 
+.ambient-background--soft {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.32), transparent 24%),
+    linear-gradient(180deg, rgba(237, 242, 249, 0.82) 0%, rgba(223, 240, 251, 0.74) 52%, rgba(237, 242, 249, 0.86) 100%);
+}
+
 .ambient-background__base,
 .ambient-background__water,
 .ambient-background__ripple,
@@ -450,6 +456,38 @@ h1 {
   background:
     linear-gradient(180deg, rgba(200, 234, 249, 0.08), rgba(26, 111, 187, 0.2) 55%, rgba(15, 52, 96, 0.16) 100%);
   animation: water-rise 24s ease-in-out infinite;
+}
+
+.ambient-background--soft .ambient-background__base {
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.3), transparent 36%),
+    linear-gradient(180deg, rgba(200, 234, 249, 0.42) 0%, rgba(144, 210, 240, 0.18) 42%, rgba(46, 151, 212, 0.08) 100%);
+}
+
+.ambient-background--soft .ambient-background__water {
+  opacity: 0.72;
+  filter: blur(22px);
+}
+
+.ambient-background--soft .ambient-background__water--two {
+  opacity: 0.6;
+}
+
+.ambient-background--soft .ambient-background__water--three {
+  opacity: 0.44;
+}
+
+.ambient-background--soft .ambient-background__ripple {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.ambient-background--soft .ambient-background__ripple--one,
+.ambient-background--soft .ambient-background__ripple--two {
+  opacity: 0.78;
+}
+
+.ambient-background--soft .ambient-background__bloom {
+  opacity: 0.4;
 }
 
 .ambient-background__ripple {

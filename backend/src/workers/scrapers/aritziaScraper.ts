@@ -11,13 +11,21 @@ export async function scrapeAritziaPrice(
 ): Promise<{ price: number; imageUrl: string | null; title: string | null }> {
   console.log(`🔍 [Scraper] Starting scrape for: ${productUrl}`);
 
-  // Add overall timeout
-  const timeout = 45000; // 45 seconds total timeout
+  let context: BrowserContext | null = null;
+
+  // Add overall timeout protection
+  const timeout = 60000; // 60 seconds total timeout
+  let timeoutHandle: NodeJS.Timeout | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(
-      () => reject(new Error("Scrape timeout after 45 seconds")),
-      timeout,
-    );
+    timeoutHandle = setTimeout(() => {
+      if (context) {
+        void context.close().catch((closeError) => {
+          console.warn("⚠️ [Scraper] Failed to close timed-out context:", closeError);
+        });
+        context = null;
+      }
+      reject(new Error("Scrape timeout after 60 seconds"));
+    }, timeout);
   });
 
   // Initialize the browser only if it doesn't exist yet
@@ -44,10 +52,17 @@ export async function scrapeAritziaPrice(
       ],
     });
   }
+  const browser = globalBrowser;
+  if (!browser) {
+    throw new Error("Browser initialization failed");
+  }
 
-  let context: BrowserContext | null = null;
-
-  try {
+  const scrapeTask = async (): Promise<{
+    price: number;
+    imageUrl: string | null;
+    title: string | null;
+  }> => {
+    try {
     // Rotate user agents to avoid detection
     const userAgents = [
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -59,7 +74,7 @@ export async function scrapeAritziaPrice(
       userAgents[Math.floor(Math.random() * userAgents.length)];
 
     // reuse browser context with optimizations
-    context = await globalBrowser.newContext({
+    context = await browser.newContext({
       userAgent: randomUserAgent,
       viewport: { width: 1920, height: 1080 },
       deviceScaleFactor: 1,
@@ -114,11 +129,11 @@ export async function scrapeAritziaPrice(
     // Navigate with optimized settings
     await page.goto(productUrl, {
       waitUntil: "domcontentloaded",
-      timeout: 20000, // Increased timeout for anti-detection
+      timeout: 30000,
     });
 
-    // Random delay to appear more human (3-8 seconds)
-    const randomDelay = Math.floor(Math.random() * 5000) + 3000;
+    // Random delay to appear more human (1.5-4 seconds)
+    const randomDelay = Math.floor(Math.random() * 2500) + 1500;
     console.log(`⏳ [Scraper] Waiting ${randomDelay}ms to appear human...`);
     await page.waitForTimeout(randomDelay);
 
@@ -169,8 +184,9 @@ export async function scrapeAritziaPrice(
       const priceElements = await page
         .locator("text=/\\$[0-9]+\\.?[0-9]*/")
         .all();
-      if (priceElements.length > 0) {
-        rawPriceText = await priceElements[0].innerText();
+      const firstPriceElement = priceElements[0];
+      if (firstPriceElement) {
+        rawPriceText = await firstPriceElement.innerText();
         console.log(`✅ [Scraper] Found price using regex: ${rawPriceText}`);
         priceFound = true;
       }
@@ -327,38 +343,47 @@ export async function scrapeAritziaPrice(
       console.warn("⚠️ [Scraper] Could not find product image:", err);
     }
 
-    console.log(`✅ [Scraper] Scrape completed successfully!`);
+      console.log(`✅ [Scraper] Scrape completed successfully!`);
 
-    return {
-      price: cleanPrice,
-      imageUrl: imageUrl,
-      title: productTitle,
-    };
-  } catch (error) {
-    console.error(
-      `❌ [Scraper] Failed to scrape Aritzia: ${productUrl}`,
-      error,
-    );
+      return {
+        price: cleanPrice,
+        imageUrl: imageUrl,
+        title: productTitle,
+      };
+    } catch (error) {
+      console.error(
+        `❌ [Scraper] Failed to scrape Aritzia: ${productUrl}`,
+        error,
+      );
 
-    // Check for specific error types
-    if (error instanceof Error) {
-      if (error.message.includes("timeout")) {
-        throw new Error(
-          "Scrape timeout - Aritzia might be slow or blocking us",
-        );
-      } else if (error.message.includes("bot detection")) {
-        throw new Error("Bot detection detected - Aritzia has blocked us");
-      } else if (error.message.includes("DOM Parse Error")) {
-        throw new Error("DOM structure changed - need to update selectors");
+      // Check for specific error types
+      if (error instanceof Error) {
+        if (error.message.includes("timeout")) {
+          throw new Error(
+            "Scrape timeout - Aritzia might be slow or blocking us",
+          );
+        } else if (error.message.includes("bot detection")) {
+          throw new Error("Bot detection detected - Aritzia has blocked us");
+        } else if (error.message.includes("DOM Parse Error")) {
+          throw new Error("DOM structure changed - need to update selectors");
+        }
       }
-    }
 
-    throw new Error("Scrape failed. Target is blocking or structure changed.");
-  } finally {
-    // cleanup - close the context even if the scrape fails
-    if (context) {
-      await context.close();
+      throw new Error("Scrape failed. Target is blocking or structure changed.");
+    } finally {
+      // cleanup - close the context even if the scrape fails
+      if (context) {
+        await context.close();
+      }
+      console.log(`🧹 [Scraper] Context closed`);
     }
-    console.log(`🧹 [Scraper] Context closed`);
+  };
+
+  try {
+    return await Promise.race([scrapeTask(), timeoutPromise]);
+  } finally {
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+    }
   }
 }
