@@ -29,10 +29,21 @@ export const useRealTimeNotifications = () => {
 
   useEffect(() => {
     let eventSource: EventSource | null = null;
+    const apiBaseUrl =
+      import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
     const connectToStream = () => {
       try {
-        eventSource = new EventSource("/api/notifications/stream");
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsConnected(false);
+          return;
+        }
+
+        eventSource?.close();
+        eventSource = new EventSource(
+          `${apiBaseUrl}/notifications/stream?token=${encodeURIComponent(token)}`,
+        );
 
         eventSource.onopen = () => {
           console.log(

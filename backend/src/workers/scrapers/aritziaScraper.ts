@@ -28,6 +28,12 @@ export async function scrapeAritziaPrice(
     }, timeout);
   });
 
+  if (globalBrowser && !globalBrowser.isConnected()) {
+    console.warn("[Scraper] Browser disconnected. Relaunching browser instance.");
+    await globalBrowser.close().catch(() => undefined);
+    globalBrowser = null;
+  }
+
   // Initialize the browser only if it doesn't exist yet
   if (!globalBrowser) {
     console.log(`🚀 [Scraper] Launching new browser instance...`);

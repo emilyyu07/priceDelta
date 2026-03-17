@@ -10,6 +10,7 @@ export const ProductsPage: React.FC = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +36,18 @@ export const ProductsPage: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // Implement search logic later
-    console.log("Searching for:", searchQuery);
+    setSearchQuery(searchInput.trim().toLowerCase());
   };
+
+  const filteredProducts = products.filter((product) => {
+    if (!searchQuery) {
+      return true;
+    }
+
+    const title = product.title.toLowerCase();
+    const category = product.category?.toLowerCase() ?? "";
+    return title.includes(searchQuery) || category.includes(searchQuery);
+  });
 
   return (
     <div className="container mx-auto p-4">
@@ -48,8 +58,8 @@ export const ProductsPage: React.FC = () => {
         <div className="flex gap-4 mb-6">
           <Input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Search products..."
             className="flex-1"
@@ -65,11 +75,15 @@ export const ProductsPage: React.FC = () => {
         <div className="text-center py-10 text-primary-800">Loading products...</div>
       ) : error ? (
         <div className="text-red-500 text-center py-10">{error}</div>
-      ) : products.length > 0 ? (
-        <ProductGrid products={products} onProductClick={handleProductClick} />
+      ) : filteredProducts.length > 0 ? (
+        <ProductGrid products={filteredProducts} onProductClick={handleProductClick} />
       ) : (
         <div className="bg-primary-50 p-8 rounded-lg border border-primary-200 text-center">
-          <p className="text-primary-600">No products found in the database.</p>
+          <p className="text-primary-600">
+            {searchQuery
+              ? "No products match your search."
+              : "No products found in the database."}
+          </p>
         </div>
       )}
     </div>

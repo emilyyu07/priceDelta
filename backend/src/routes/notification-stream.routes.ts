@@ -6,15 +6,19 @@ import type { AuthRequest } from "../middleware/auth.middleware.js";
 const router = Router();
 
 // Server-Sent Events endpoint for real-time notifications
-router.get("/stream", protect, (req: AuthRequest, res) => {
+router.get("/", protect, (req: AuthRequest, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authorized, user not found" });
+  }
   const userId = req.user.id;
+  const frontendOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
   
   // Set headers for SSE
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': frontendOrigin,
     'Access-Control-Allow-Headers': 'Cache-Control'
   });
 

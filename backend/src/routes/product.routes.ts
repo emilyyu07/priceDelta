@@ -5,6 +5,7 @@ import {
   getQueueHealth,
   clearStuckJobs,
 } from "../controllers/product.controller";
+import { protect } from "../middleware/auth.middleware.js";
 import prisma from "../config/prisma.js";
 const router = Router();
 
@@ -101,7 +102,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Debugging and monitoring endpoints
-router.get("/health", getQueueHealth);
-router.post("/clear-stuck-jobs", clearStuckJobs);
+router.get("/health", protect, getQueueHealth);
+router.post("/clear-stuck-jobs", protect, clearStuckJobs);
 
 export default router;

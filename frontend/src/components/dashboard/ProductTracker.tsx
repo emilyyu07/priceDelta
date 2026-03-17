@@ -127,9 +127,9 @@ export const ProductTracker = () => {
             variant="primary"
             size="lg"
             className="w-full"
-            loading={status === 'LOADING' || status === 'SUCCESS'}
+            loading={false}
           >
-            {(status === 'LOADING' || status === 'SUCCESS') ? 'Deploying Price Bot...' : 'Track Price'}
+            Track Price
           </AnimatedButton>
         </form>
       ) : (

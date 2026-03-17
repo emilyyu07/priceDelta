@@ -17,8 +17,8 @@ export const trackProduct = async (req: Request, res: Response) => {
       where: { name: storeName },
       update: {},
       create: {
-        name: "Aritzia",
-        apiUrl: "https://www.aritzia.com",
+        name: storeName,
+        apiUrl: new URL(cleanUrl).origin,
         isActive: true,
       },
     });

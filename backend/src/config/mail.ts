@@ -1,13 +1,14 @@
 import nodemailer from "nodemailer";
+import { env } from "./env.js";
 
 // transporter (reusable connection pool to gmail)
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST, // smtp.gmail.com
-  port: Number(process.env.SMTP_PORT) || 587,
+  host: env.SMTP_HOST, // smtp.gmail.com
+  port: env.SMTP_PORT || 587,
   secure: false,
   auth: {
-    user: process.env.SMTP_USER, // pricedeltanotif@gmail.com
-    pass: process.env.SMTP_PASS, // app pw
+    user: env.SMTP_USER, // pricedeltanotif@gmail.com
+    pass: env.SMTP_PASS, // app pw
   },
 });
 
@@ -19,7 +20,7 @@ export const sendPriceDropEmail = async (
 ) => {
   try {
     const info = await transporter.sendMail({
-      from: `"PriceDelta Alerts" <${process.env.SMTP_USER}>`,
+      from: `"PriceDelta Alerts" <${env.SMTP_USER}>`,
       to: toEmail,
       subject: `🚨 Price Drop: ${productName} is now $${newPrice}!`,
       html: `
@@ -49,7 +50,7 @@ export const sendWelcomeEmail = async (toEmail: string, userName?: string) => {
     const displayName = userName || toEmail.split("@")[0]; // Use name or email username
 
     const info = await transporter.sendMail({
-      from: `"PriceDelta Team" <${process.env.SMTP_USER}>`,
+      from: `"PriceDelta Team" <${env.SMTP_USER}>`,
       to: toEmail,
       subject: `🎉 Welcome to PriceDelta, ${displayName}!`,
       html: `
@@ -77,7 +78,7 @@ export const sendWelcomeEmail = async (toEmail: string, userName?: string) => {
           </div>
           
           <div style="text-align: center; margin-bottom: 25px;">
-            <a href="${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard" 
+            <a href="${env.FRONTEND_URL}/dashboard" 
                style="background-color: #0284c7; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
               Start Tracking Products
             </a>

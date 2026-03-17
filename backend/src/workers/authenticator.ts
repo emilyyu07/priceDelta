@@ -1,15 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma";
+import { env } from "../config/env.js";
 import "dotenv/config";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export const registerUser = async (email: string, password: string) => {
-  if (!JWT_SECRET) {
-    throw new Error("Internal servor issue: JWT Secret is missing.");
-  }
-
   // Normalize email to lowercase for consistency
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -32,17 +27,13 @@ export const registerUser = async (email: string, password: string) => {
     select: { id: true, email: true },
   });
 
-  const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, {
+  const token = jwt.sign({ userId: newUser.id }, env.JWT_SECRET, {
     expiresIn: "1h",
   });
   return { token, user: newUser };
 };
 
 export const loginUser = async (email: string, password: string) => {
-  if (!JWT_SECRET) {
-    throw new Error("Internal servor issue: JWT Secret is missing.");
-  }
-
   // Normalize email to lowercase for case-insensitive lookup
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -62,6 +53,8 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Invalid credentials.");
   }
 
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id }, env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
   return { token, user: { id: user.id, email: user.email } };
 };

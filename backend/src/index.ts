@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { env } from "./config/env.js";
 import { initScheduledJobs } from "./config/scheduler";
 import healthRoutes from "./routes/health.routes";
 import productRoutes from "./routes/product.routes";
@@ -11,13 +12,18 @@ import notificationStreamRoutes from "./routes/notification-stream.routes";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express(); //initialize express application
-const PORT = process.env.PORT || 3001;
+const PORT = env.PORT;
 
 // initialize scheduled jobs (start cron job when server starts)
 initScheduledJobs();
 
 //global middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 //routes

@@ -1,9 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma.js";
+import { env } from "../config/env.js";
 import "dotenv/config";
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 interface JwtPayload {
   userId: string;
@@ -19,20 +18,18 @@ export const protect = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let token;
-
-  if (
+  const headerToken =
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
-  ) {
+      ? req.headers.authorization.split(" ")[1]
+      : undefined;
+  const queryToken =
+    typeof req.query.token === "string" ? req.query.token : undefined;
+  const token = headerToken ?? queryToken;
+
+  if (token) {
     try {
-      token = req.headers.authorization.split(" ")[1];
-      if (!JWT_SECRET) {
-        return res
-          .status(500)
-          .json({ message: "Internal server issue: JWT Secret is missing." });
-      }
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
 
       const user = await prisma.user.findUnique({
         where: { id: decoded.userId },

@@ -1,18 +1,13 @@
 import "dotenv/config";
 import { Queue, Worker, Job } from "bullmq";
+import { env } from "../config/env.js";
 import { scrapeAritziaPrice } from "../workers/scrapers/aritziaScraper";
 import { saveScrapedPrice } from "../services/price.service";
 
-const redisPort = Number(process.env.REDIS_PORT || "6379");
-
-if (Number.isNaN(redisPort)) {
-  throw new Error("REDIS_PORT must be a valid number.");
-}
-
 // establish connection to Redis
 const redisConnectionOptions = {
-  host: process.env.REDIS_HOST || "127.0.0.1",
-  port: redisPort,
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
   maxRetriesPerRequest: null,
 };
 
