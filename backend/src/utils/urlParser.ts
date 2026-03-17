@@ -1,28 +1,24 @@
 export function parseUrl(rawUrl: string) {
+  let parsedUrl: URL;
+
   try {
-    // parse raw string
-    const parsedUrl = new URL(rawUrl);
-
-    // reconstruct the clean URL (ignores ?query=params and #hash_fragments)
-    // parsedUrl.origin = "https://www.aritzia.com"
-    // parsedUrl.pathname = "/en/product/effortless-pant/77775.html"
-    const cleanUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
-
-    // extract the externalId
-    const match = parsedUrl.pathname.match(/\/(\d+)\.html$/);
-    const externalId = match ? match[1] : null;
-
-    if (!externalId) {
-      throw new Error("Could not extract Aritzia Product ID from URL");
-    }
-
-    return {
-      cleanUrl,
-      externalId,
-    };
-  } catch (error) {
+    parsedUrl = new URL(rawUrl);
+  } catch {
     throw new Error("Invalid URL provided");
   }
+
+  const cleanUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
+  const match = parsedUrl.pathname.match(/\/(\d+)\.html$/);
+  const externalId = match ? match[1] : null;
+
+  if (!externalId) {
+    throw new Error("Could not extract Aritzia Product ID from URL");
+  }
+
+  return {
+    cleanUrl,
+    externalId,
+  };
 }
 
 export function extractStoreName(url: string): string {

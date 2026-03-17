@@ -5,6 +5,7 @@ import { ProductGrid } from '../components/products/ProductGrid';
 import type { Product } from '../types';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
+import { Card } from '../components/common/Card';
 
 export const ProductsPage: React.FC = () => {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -78,13 +79,13 @@ export const ProductsPage: React.FC = () => {
       ) : filteredProducts.length > 0 ? (
         <ProductGrid products={filteredProducts} onProductClick={handleProductClick} />
       ) : (
-        <div className="bg-primary-50 p-8 rounded-lg border border-primary-200 text-center">
+        <Card className="frosted-surface text-center py-8">
           <p className="text-primary-600">
             {searchQuery
               ? "No products match your search."
               : "No products found in the database."}
           </p>
-        </div>
+        </Card>
       )}
     </div>
   );

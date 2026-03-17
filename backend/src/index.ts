@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./config/env.js";
-import { initScheduledJobs } from "./config/scheduler";
+import prisma from "./config/prisma.js";
 import healthRoutes from "./routes/health.routes";
 import productRoutes from "./routes/product.routes";
 import alertRoutes from "./routes/alert.routes";
@@ -13,9 +13,6 @@ import { errorHandler } from "./middleware/errorHandler";
 
 const app = express(); //initialize express application
 const PORT = env.PORT;
-
-// initialize scheduled jobs (start cron job when server starts)
-initScheduledJobs();
 
 //global middleware
 app.use(
@@ -39,6 +36,18 @@ app.use("/api/notifications/stream", notificationStreamRoutes);
 app.use(errorHandler);
 
 //log if server is running
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server successfully running at http://localhost:${PORT}/health`);
 });
+
+const shutdown = (signal: string) => {
+  console.log(`[API] Received ${signal}. Starting graceful shutdown...`);
+  server.close(async () => {
+    await prisma.$disconnect();
+    console.log("[API] Shutdown complete.");
+    process.exit(0);
+  });
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));

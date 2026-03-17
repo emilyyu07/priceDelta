@@ -6,10 +6,15 @@ import {
   clearStuckJobs,
 } from "../controllers/product.controller";
 import { protect } from "../middleware/auth.middleware.js";
+import { validate } from "../middleware/validate.js";
 import prisma from "../config/prisma.js";
+import { z } from "zod";
 const router = Router();
+const trackSchema = z.object({
+  url: z.string().url("Must be a valid URL."),
+});
 
-router.post("/track", trackProduct);
+router.post("/track", validate(trackSchema), trackProduct);
 
 // polling
 router.get("/track/:listingId/status", getTrackStatus);
@@ -17,7 +22,63 @@ router.get("/track/:listingId/status", getTrackStatus);
 // get all products (browsing page)
 router.get("/", async (_req, res, next) => {
   try {
+    const limitQuery = _req.query.limit;
+    const cursorQuery = _req.query.cursor;
+    const hasPaginationQuery =
+      typeof limitQuery !== "undefined" || typeof cursorQuery !== "undefined";
+    const limit = Math.min(
+      Number.parseInt(String(limitQuery || "20"), 10) || 20,
+      100,
+    );
+    const cursor = typeof cursorQuery === "string" ? cursorQuery : undefined;
+    const productSelect = {
+      id: true,
+      externalId: true,
+      title: true,
+      description: true,
+      category: true,
+      imageUrl: true,
+      url: true,
+      createdAt: true,
+      updatedAt: true,
+      listings: {
+        select: {
+          id: true,
+          productId: true,
+          retailerId: true,
+          currentPrice: true,
+          url: true,
+          isActive: true,
+          retailer: {
+            select: {
+              id: true,
+              name: true,
+              apiUrl: true,
+              isActive: true,
+            },
+          },
+        },
+      },
+    } as const;
+
+    if (!hasPaginationQuery) {
+      const products = await prisma.product.findMany({
+        where: {
+          listings: {
+            some: {
+              isActive: true,
+            },
+          },
+        },
+        select: productSelect,
+        orderBy: { createdAt: "desc" },
+      });
+      return res.json(products);
+    }
+
     const products = await prisma.product.findMany({
+      take: limit + 1,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       where: {
         listings: {
           some: {
@@ -25,37 +86,18 @@ router.get("/", async (_req, res, next) => {
           },
         },
       },
-      select: {
-        id: true,
-        externalId: true,
-        title: true,
-        description: true,
-        category: true,
-        imageUrl: true,
-        url: true,
-        createdAt: true,
-        updatedAt: true,
-        listings: {
-          select: {
-            id: true,
-            productId: true,
-            retailerId: true,
-            currentPrice: true,
-            url: true,
-            isActive: true,
-            retailer: {
-              select: {
-                id: true,
-                name: true,
-                apiUrl: true,
-                isActive: true,
-              },
-            },
-          },
-        },
-      },
+      select: productSelect,
+      orderBy: { createdAt: "desc" },
     });
-    res.json(products);
+
+    const hasNextPage = products.length > limit;
+    const items = hasNextPage ? products.slice(0, limit) : products;
+
+    return res.json({
+      items,
+      nextCursor: hasNextPage ? items[items.length - 1]?.id ?? null : null,
+      hasNextPage,
+    });
   } catch (error) {
     next(error);
   }

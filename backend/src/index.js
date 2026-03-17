@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const env_js_1 = require("./config/env.js");
-const scheduler_1 = require("./config/scheduler");
+const prisma_js_1 = __importDefault(require("./config/prisma.js"));
 const health_routes_1 = __importDefault(require("./routes/health.routes"));
 const product_routes_1 = __importDefault(require("./routes/product.routes"));
 const alert_routes_1 = __importDefault(require("./routes/alert.routes"));
@@ -17,8 +17,6 @@ const notification_stream_routes_1 = __importDefault(require("./routes/notificat
 const errorHandler_1 = require("./middleware/errorHandler");
 const app = (0, express_1.default)(); //initialize express application
 const PORT = env_js_1.env.PORT;
-// initialize scheduled jobs (start cron job when server starts)
-(0, scheduler_1.initScheduledJobs)();
 //global middleware
 app.use((0, cors_1.default)({
     origin: env_js_1.env.FRONTEND_URL,
@@ -36,7 +34,17 @@ app.use("/api/notifications/stream", notification_stream_routes_1.default);
 //global error handling
 app.use(errorHandler_1.errorHandler);
 //log if server is running
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server successfully running at http://localhost:${PORT}/health`);
 });
+const shutdown = (signal) => {
+    console.log(`[API] Received ${signal}. Starting graceful shutdown...`);
+    server.close(async () => {
+        await prisma_js_1.default.$disconnect();
+        console.log("[API] Shutdown complete.");
+        process.exit(0);
+    });
+};
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 //# sourceMappingURL=index.js.map

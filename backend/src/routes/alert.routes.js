@@ -7,7 +7,13 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../config/prisma"));
 const library_1 = require("@prisma/client/runtime/library");
 const auth_middleware_1 = require("../middleware/auth.middleware");
+const validate_js_1 = require("../middleware/validate.js");
+const zod_1 = require("zod");
 const router = (0, express_1.Router)();
+const createAlertSchema = zod_1.z.object({
+    productId: zod_1.z.string().uuid("productId must be a valid UUID."),
+    targetPrice: zod_1.z.number().positive("Target price must be positive."),
+});
 // GET all alerts for the logged-in user
 router.get("/", auth_middleware_1.protect, async (req, res, next) => {
     try {
@@ -22,14 +28,9 @@ router.get("/", auth_middleware_1.protect, async (req, res, next) => {
     }
 });
 // CREATE an alert for the logged-in user
-router.post("/", auth_middleware_1.protect, async (req, res, next) => {
+router.post("/", auth_middleware_1.protect, (0, validate_js_1.validate)(createAlertSchema), async (req, res, next) => {
     try {
         const { productId, targetPrice } = req.body;
-        if (!productId || !targetPrice) {
-            return res
-                .status(400)
-                .json({ message: "productId and targetPrice are required" });
-        }
         const alert = await prisma_1.default.priceAlert.create({
             data: {
                 userId: req.user.id,

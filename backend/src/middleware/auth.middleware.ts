@@ -8,9 +8,15 @@ interface JwtPayload {
   userId: string;
 }
 
-// Define a custom request type that includes the user property
+export interface UserPayload {
+  id: string;
+  email: string;
+  name: string | null;
+  createdAt: Date;
+}
+
 export interface AuthRequest extends Request {
-  user?: any;
+  user: UserPayload;
 }
 
 export const protect = async (

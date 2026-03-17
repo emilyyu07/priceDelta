@@ -2,9 +2,15 @@ import { Router } from "express";
 import prisma from "../config/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { protect } from "../middleware/auth.middleware";
+import { validate } from "../middleware/validate.js";
 import type { AuthRequest } from "../middleware/auth.middleware";
+import { z } from "zod";
 
 const router = Router();
+const createAlertSchema = z.object({
+  productId: z.string().uuid("productId must be a valid UUID."),
+  targetPrice: z.number().positive("Target price must be positive."),
+});
 
 // GET all alerts for the logged-in user
 router.get("/", protect, async (req: AuthRequest, res, next) => {
@@ -20,30 +26,29 @@ router.get("/", protect, async (req: AuthRequest, res, next) => {
 });
 
 // CREATE an alert for the logged-in user
-router.post("/", protect, async (req: AuthRequest, res, next) => {
-  try {
-    const { productId, targetPrice } = req.body;
+router.post(
+  "/",
+  protect,
+  validate(createAlertSchema),
+  async (req: AuthRequest, res, next) => {
+    try {
+      const { productId, targetPrice } = req.body;
 
-    if (!productId || !targetPrice) {
-      return res
-        .status(400)
-        .json({ message: "productId and targetPrice are required" });
+      const alert = await prisma.priceAlert.create({
+        data: {
+          userId: req.user.id,
+          productId: productId,
+          targetPrice: new Decimal(targetPrice),
+          isActive: true,
+        },
+      });
+
+      res.status(201).json({ success: true, message: "Alert set!", alert });
+    } catch (error) {
+      next(error);
     }
-
-    const alert = await prisma.priceAlert.create({
-      data: {
-        userId: req.user.id,
-        productId: productId,
-        targetPrice: new Decimal(targetPrice),
-        isActive: true,
-      },
-    });
-
-    res.status(201).json({ success: true, message: "Alert set!", alert });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 // DELETE an alert for the logged-in user
 router.delete("/:id", protect, async (req: AuthRequest, res, next) => {
