@@ -8,6 +8,9 @@ const router = Router();
 // GET all notifications for the logged-in user
 router.get("/", protect, async (req: AuthRequest, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized, user not found" });
+    }
     const notifications = await prisma.notification.findMany({
       where: { userId: req.user.id },
       orderBy: { createdAt: "desc" },
@@ -21,6 +24,9 @@ router.get("/", protect, async (req: AuthRequest, res, next) => {
 // MARK a notification as read
 router.patch("/:id/read", protect, async (req: AuthRequest, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized, user not found" });
+    }
     const { id } = req.params as { id: string };
     const userId = req.user.id;
 

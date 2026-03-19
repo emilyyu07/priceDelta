@@ -16,11 +16,11 @@ export interface UserPayload {
 }
 
 export interface AuthRequest extends Request {
-  user: UserPayload;
+  user?: UserPayload;
 }
 
 export const protect = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -48,7 +48,7 @@ export const protect = async (
           .json({ message: "Not authorized, user not found" });
       }
 
-      req.user = user;
+      (req as AuthRequest).user = user;
       next();
     } catch (error) {
       console.error(error);

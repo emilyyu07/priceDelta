@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import { scrapeQueue } from "../queue/priceQueue";
-import { parseUrl, extractStoreName } from "../utils/urlParser";
-import prisma from "../config/prisma";
+import { scrapeQueue } from "../queue/priceQueue.js";
+import { parseUrl, extractStoreName } from "../utils/urlParser.js";
+import prisma from "../config/prisma.js";
 
 export const trackProduct = async (req: Request, res: Response) => {
   try {

@@ -15,6 +15,9 @@ const createAlertSchema = z.object({
 // GET all alerts for the logged-in user
 router.get("/", protect, async (req: AuthRequest, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized, user not found" });
+    }
     const alerts = await prisma.priceAlert.findMany({
       where: { userId: req.user.id },
       include: { product: true },
@@ -32,6 +35,11 @@ router.post(
   validate(createAlertSchema),
   async (req: AuthRequest, res, next) => {
     try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ message: "Not authorized, user not found" });
+      }
       const { productId, targetPrice } = req.body;
 
       const alert = await prisma.priceAlert.create({
@@ -53,6 +61,9 @@ router.post(
 // DELETE an alert for the logged-in user
 router.delete("/:id", protect, async (req: AuthRequest, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authorized, user not found" });
+    }
     const { id } = req.params;
 
     if (!id || Array.isArray(id)) {

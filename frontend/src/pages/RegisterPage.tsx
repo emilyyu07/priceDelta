@@ -71,7 +71,7 @@ export const RegisterPage: React.FC = () => {
         </div>
 
         {/* Registration form */}
-        <Card className={`ambient-auth-card transition-all duration-800 delay-600 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-6 opacity-0 scale-95'}`}>
+        <Card className={`frosted-surface transition-all duration-800 delay-600 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-6 opacity-0 scale-95'}`}>
           <h2 className="text-[1.7rem] sm:text-2xl font-bold font-chic text-primary-800 mb-5 sm:mb-6">Sign Up</h2>
           
           <div className="space-y-4">
