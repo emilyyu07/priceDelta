@@ -1,15 +1,15 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import prisma from "../config/prisma";
+import prisma from "../config/prisma.js";
 import { env } from "../config/env.js";
 import "dotenv/config";
 
-export const registerUser = async (email: string, password: string) => {
+export const registerUser = async (email: string, password: string, name?: string) => {
   // Normalize email to lowercase for consistency
   const normalizedEmail = email.toLowerCase().trim();
 
   if (!normalizedEmail || !password) {
-    throw new Error("Email and password are required.");
+    throw new Error("Email, password, and name are required.");
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -23,8 +23,12 @@ export const registerUser = async (email: string, password: string) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.user.create({
-    data: { email: normalizedEmail, password: hashedPassword },
-    select: { id: true, email: true },
+    data: { 
+      email: normalizedEmail, 
+      password: hashedPassword,
+      name: name?.trim() || null,
+    },
+    select: { id: true, email: true, name: true },
   });
 
   const token = jwt.sign({ userId: newUser.id }, env.JWT_SECRET, {

@@ -8,6 +8,7 @@ import { AmbientBackground } from '../components/layout/AmbientBackground';
 
 export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +22,7 @@ export const RegisterPage: React.FC = () => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       setError('Please fill in all fields');
       return;
     }
@@ -29,12 +30,16 @@ export const RegisterPage: React.FC = () => {
       setError('Passwords do not match');
       return;
     }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
 
     setError('');
     setIsLoading(true);
 
     try {
-      await register(email, password);
+      await register(email, password, name);
       // After successful registration, the AuthProvider will automatically log in the user
       // and App.tsx will handle the redirection to the home page.
     } catch (error) {
@@ -77,6 +82,20 @@ export const RegisterPage: React.FC = () => {
           <div className="space-y-4">
             <div className={`transition-all duration-600 delay-700 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
               <Input
+                id="name"
+                type="text"
+                label="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                placeholder="John Doe"
+                disabled={isLoading}
+                helperText="Your first and last name"
+              />
+            </div>
+
+            <div className={`transition-all duration-600 delay-800 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
+              <Input
                 id="email"
                 type="email"
                 label="Email"
@@ -85,10 +104,11 @@ export const RegisterPage: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="you@example.com"
                 disabled={isLoading}
+                helperText="Must be a valid email address (e.g., user@example.com)"
               />
             </div>
 
-            <div className={`transition-all duration-600 delay-800 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
+            <div className={`transition-all duration-600 delay-[900ms] ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
               <Input
                 id="password"
                 type="password"
@@ -98,10 +118,11 @@ export const RegisterPage: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="••••••••"
                 disabled={isLoading}
+                helperText="Minimum 8 characters required"
               />
             </div>
 
-            <div className={`transition-all duration-600 delay-[900ms] ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
+            <div className={`transition-all duration-600 delay-1000 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -120,7 +141,7 @@ export const RegisterPage: React.FC = () => {
               </div>
             )}
 
-            <div className={`transition-all duration-600 delay-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+            <div className={`transition-all duration-600 delay-[1100ms] ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
               <Button
                 onClick={handleSubmit}
                 disabled={isLoading}
@@ -131,7 +152,7 @@ export const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          <p className={`text-sm text-primary-600 text-center mt-4 font-sleek transition-all duration-600 delay-[1100ms] ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'}`}>
+          <p className={`text-sm text-primary-600 text-center mt-4 font-sleek transition-all duration-600 delay-[1200ms] ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'}`}>
             Already have an account?{' '}
             <Link to="/login" className="text-accent-500 hover:underline font-chic transition-all duration-300 hover:scale-105 inline-block">
               Sign In

@@ -26,9 +26,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (email: string, password: string): Promise<void> => {
+  const register = async (email: string, password: string, name: string): Promise<void> => {
     try {
-      const { token } = await registerApi(email, password);
+      const { token } = await registerApi(email, password, name);
       if (token) {
         // After successful registration, log the user in
         const userData = await userApi.getMe();

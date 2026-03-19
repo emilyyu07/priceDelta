@@ -26,6 +26,11 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
     setError('');
     setIsLoading(true);
 
@@ -82,6 +87,7 @@ export const LoginPage: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="you@example.com"
                 disabled={isLoading}
+                helperText="Must be a valid email address"
               />
             </div>
 
@@ -95,6 +101,7 @@ export const LoginPage: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                 placeholder="••••••••"
                 disabled={isLoading}
+                helperText="Minimum 8 characters required"
               />
             </div>
 

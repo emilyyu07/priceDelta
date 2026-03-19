@@ -4,7 +4,7 @@ import {
   trackProduct,
   getQueueHealth,
   clearStuckJobs,
-} from "../controllers/product.controller";
+} from "../controllers/product.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 import { validate } from "../middleware/validate.js";
 import prisma from "../config/prisma.js";
