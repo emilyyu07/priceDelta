@@ -1,9 +1,9 @@
 import { Router } from "express";
-import prisma from "../config/prisma";
+import prisma from "../config/prisma.js";
 import { Decimal } from "@prisma/client/runtime/library";
-import { protect } from "../middleware/auth.middleware";
+import { protect } from "../middleware/auth.middleware.js";
 import { validate } from "../middleware/validate.js";
-import type { AuthRequest } from "../middleware/auth.middleware";
+import type { AuthRequest } from "../middleware/auth.middleware.js";
 import { z } from "zod";
 
 const router = Router();

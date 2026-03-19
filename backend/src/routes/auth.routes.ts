@@ -2,12 +2,18 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import { validate } from "../middleware/validate.js";
-import { loginUser, registerUser } from "../workers/authenticator";
+import { loginUser, registerUser } from "../workers/authenticator.js";
 
 const router = Router();
-const authSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email("A valid email is required."),
   password: z.string().min(8, "Password must be at least 8 characters."),
+});
+
+const registerSchema = z.object({
+  email: z.string().email("A valid email is required."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
+  name: z.string().min(1, "Name is required.").max(100, "Name is too long."),
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -17,7 +23,7 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post("/login", authLimiter, validate(authSchema), async (req, res) => {
+router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -41,19 +47,19 @@ router.post("/login", authLimiter, validate(authSchema), async (req, res) => {
 router.post(
   "/register",
   authLimiter,
-  validate(authSchema),
+  validate(registerSchema),
   async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, name } = req.body;
 
-      const { token, user } = await registerUser(email, password);
+      const { token, user } = await registerUser(email, password, name);
       res.status(201).json({ token, user });
     } catch (err: any) {
       const message =
         err instanceof Error ? err.message : "Registration failed.";
       const status =
         message === "An account with this email already exists." ||
-        message === "Email and password are required."
+        message === "Email, password, and name are required."
           ? 400
           : 500;
 

@@ -7,8 +7,8 @@ vi.mock("../workers/authenticator", () => ({
   registerUser: vi.fn(),
 }));
 
-import authRoutes from "./auth.routes";
-import { loginUser, registerUser } from "../workers/authenticator";
+import authRoutes from "./auth.routes.js";
+import { loginUser, registerUser } from "../workers/authenticator.js";
 
 describe("auth routes", () => {
   const app = express();
@@ -22,18 +22,19 @@ describe("auth routes", () => {
   it("register returns token and user", async () => {
     vi.mocked(registerUser).mockResolvedValue({
       token: "token-1",
-      user: { id: "u1", email: "test@example.com" },
+      user: { id: "u1", email: "test@example.com", name: "Test User" },
     });
 
     const res = await request(app).post("/api/auth/register").send({
       email: "test@example.com",
       password: "Password1",
+      name: "Test User",
     });
 
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
       token: "token-1",
-      user: { id: "u1", email: "test@example.com" },
+      user: { id: "u1", email: "test@example.com", name: "Test User" },
     });
   });
 
@@ -45,6 +46,7 @@ describe("auth routes", () => {
     const res = await request(app).post("/api/auth/register").send({
       email: "test@example.com",
       password: "Password1",
+      name: "Test User",
     });
 
     expect(res.status).toBe(400);

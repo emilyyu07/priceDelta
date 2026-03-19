@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { Queue, Worker, Job } from "bullmq";
 import { env } from "../config/env.js";
-import { scrapeAritziaPrice } from "../workers/scrapers/aritziaScraper";
-import { saveScrapedPrice } from "../services/price.service";
+import { scrapeAritziaPrice } from "../workers/scrapers/aritziaScraper.js";
+import { saveScrapedPrice } from "../services/price.service.js";
 
 // establish connection to Redis
 const redisConnectionOptions = {

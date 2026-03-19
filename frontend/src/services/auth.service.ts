@@ -8,8 +8,8 @@ export const loginApi = async (email: string, password: string): Promise<string>
   return response.token;
 };
 
-export const registerApi = async (email: string, password: string): Promise<{ token: string; user: User }> => {
-  const response = await authApi.register({ email, password });
+export const registerApi = async (email: string, password: string, name: string): Promise<{ token: string; user: User }> => {
+  const response = await authApi.register({ email, password, name });
   localStorage.setItem("token", response.token);
   return response;
 };

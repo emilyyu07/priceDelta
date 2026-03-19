@@ -2,14 +2,14 @@ import express from "express";
 import cors from "cors";
 import { env } from "./config/env.js";
 import prisma from "./config/prisma.js";
-import healthRoutes from "./routes/health.routes";
-import productRoutes from "./routes/product.routes";
-import alertRoutes from "./routes/alert.routes";
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
-import notificationRoutes from "./routes/notification.routes";
-import notificationStreamRoutes from "./routes/notification-stream.routes";
-import { errorHandler } from "./middleware/errorHandler";
+import healthRoutes from "./routes/health.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import alertRoutes from "./routes/alert.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import notificationStreamRoutes from "./routes/notification-stream.routes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express(); //initialize express application
 const PORT = env.PORT;
