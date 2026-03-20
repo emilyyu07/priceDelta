@@ -79,17 +79,23 @@ export const AlertsPage: React.FC = () => {
         <div className="space-y-4">
           {alerts.map((alert) => (
             <Card key={alert.id} className="frosted-surface flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-primary-800">
-                  {/* Assuming product is eagerly loaded with the alert */}
-                  {alert.product?.title || 'Unknown Product'}
-                </h3>
-                <p className="text-primary-600">
-                  Target Price: ${alert.targetPrice ? parseFloat(alert.targetPrice).toFixed(2) : 'N/A'}
-                </p>
-                <p className="text-sm text-primary-500">
-                  Created: {alert.lastNotifiedAt ? new Date(alert.lastNotifiedAt).toLocaleDateString() : 'N/A'}
-                </p>
+              <div className="flex items-center gap-4">
+                <img
+                  src={alert.product?.imageUrl || 'https://via.placeholder.com/48'}
+                  alt={alert.product?.title || 'Product'}
+                  className="h-12 w-12 rounded-lg object-cover flex-shrink-0"
+                />
+                <div>
+                  <h3 className="text-lg font-semibold text-primary-800">
+                    {alert.product?.title || 'Unknown Product'}
+                  </h3>
+                  <p className="text-primary-600">
+                    Target Price: ${alert.targetPrice ? parseFloat(alert.targetPrice).toFixed(2) : 'N/A'}
+                  </p>
+                  <p className="text-sm text-primary-500">
+                    Created: {alert.createdAt ? new Date(alert.createdAt).toLocaleDateString() : 'N/A'}
+                  </p>
+                </div>
               </div>
               <Button variant="danger" size="sm" onClick={() => handleDeleteAlert(alert.id)}>
                 <Trash2 className="h-4 w-4" />
