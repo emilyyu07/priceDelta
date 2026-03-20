@@ -222,9 +222,23 @@ export async function scrapeAritziaPrice(
         pageTitle.toLowerCase().includes("robot") ||
         pageTitle.toLowerCase().includes("blocked") ||
         pageTitle.toLowerCase().includes("access denied") ||
-        pageTitle.toLowerCase().includes("403")
+        pageTitle.toLowerCase().includes("403") ||
+        pageTitle.toLowerCase().includes("just a moment") ||
+        pageTitle.toLowerCase().includes("verify you are human") ||
+        pageTitle.toLowerCase().includes("attention required") ||
+        pageTitle.toLowerCase().includes("checking your browser")
       ) {
         throw new Error("Bot detection detected - page blocked");
+      }
+
+      // 404 / removed product check ──────────────────────────────────
+      if (
+        pageTitle.toLowerCase().includes("404") ||
+        pageTitle.toLowerCase().includes("page not found")
+      ) {
+        throw new Error(
+          "Product page returned 404 — product may be discontinued",
+        );
       }
 
       console.log("🔍 [Scraper] Looking for price elements...");
@@ -286,68 +300,121 @@ export async function scrapeAritziaPrice(
 
       console.log(`📊 [Scraper] Parsed price: $${cleanPrice}`);
 
-      // Title extraction ─────────────────────────────────────────────
-      let productTitle: string | null = null;
-      try {
-        const ogTitle = await page
-          .locator('meta[property="og:title"]')
-          .getAttribute("content");
-        if (ogTitle) {
-          productTitle = ogTitle;
-        } else {
-          const h1 = await page
-            .locator('h1[data-testid="product-title"], h1.product-title, h1')
-            .first()
-            .innerText()
-            .catch(() => null);
-          productTitle =
-            h1?.trim() ??
-            (await page.title())
-              .replace(/Aritzia/gi, "")
-              .replace(/\|.*$/, "")
-              .trim() ??
-            null;
-        }
-        console.log(`📝 [Scraper] Title: ${productTitle}`);
-      } catch {
-        console.warn("⚠️ [Scraper] Could not extract product title");
+    // Title extraction ─────────────────────────────────────────────
+    let productTitle: string | null = null;
+    try {
+      // getAttribute without a timeout throws TimeoutError after 30s if the
+      // element is missing. Use a short timeout + .catch so it resolves to
+      // null immediately instead of blocking, then re-entering the catch block.
+      const ogTitle = await page
+        .locator('meta[property="og:title"]')
+        .getAttribute("content", { timeout: 3000 })
+        .catch(() => null);
+
+      if (ogTitle && ogTitle.trim().length > 3) {
+        productTitle = ogTitle.trim();
+      } else {
+        // waitFor ensures the h1 has actually rendered on Aritzia's React SPA —
+        // networkidle fires before React mounts the product component, so plain
+        // .innerText() races against a not-yet-existing element.
+        const h1Locator = page
+          .locator('h1[data-testid="product-title"], h1.product-title, h1')
+          .first();
+        const h1 = await h1Locator
+          .waitFor({ state: "visible", timeout: 5000 })
+          .then(() => h1Locator.innerText())
+          .catch(() => null);
+
+        // Use || not ?? — avoids storing empty string when h1 resolves to ""
+        productTitle =
+          h1?.trim() ||
+          (await page.title())
+            .replace(/Aritzia/gi, "")
+            .replace(/\|.*$/, "")
+            .trim() ||
+          null;
       }
 
-      // Image extraction ─────────────────────────────────────────────
-      let imageUrl: string | null = null;
-      const resolveUrl = (raw: string): string => {
-        if (raw.startsWith("//")) return "https:" + raw;
-        if (raw.startsWith("/")) return "https://www.aritzia.com" + raw;
-        return raw;
-      };
+      console.log(`📝 [Scraper] Title: ${productTitle}`);
+    } catch (err) {
+      // Log the actual error — the original bare catch{} was hiding the root cause
+      console.warn("⚠️ [Scraper] Could not extract product title:", err);
+    }
 
-      try {
-        const ogImage = await page
-          .locator('meta[property="og:image"]')
-          .getAttribute("content");
-        if (ogImage) {
-          imageUrl = resolveUrl(ogImage);
+    // Image extraction ─────────────────────────────────────────────
+    let imageUrl: string | null = null;
+    const resolveUrl = (raw: string): string => {
+      if (raw.startsWith("//")) return "https:" + raw;
+      if (raw.startsWith("/")) return "https://www.aritzia.com" + raw;
+      return raw;
+    };
+
+    try {
+      const ogImage = await page
+        .locator('meta[property="og:image"]')
+        .getAttribute("content", { timeout: 3000 })
+        .catch(() => null);
+
+      if (ogImage) {
+        imageUrl = resolveUrl(ogImage);
+      } else {
+        const twitterImage = await page
+          .locator('meta[name="twitter:image"]')
+          .getAttribute("content", { timeout: 3000 })
+          .catch(() => null);
+
+        if (twitterImage) {
+          imageUrl = resolveUrl(twitterImage);
         } else {
-          const twitterImage = await page
-            .locator('meta[name="twitter:image"]')
-            .getAttribute("content");
-          if (twitterImage) {
-            imageUrl = resolveUrl(twitterImage);
-          } else {
-            const productImg = await page
-              .locator(
-                'img[alt*="product"], img[data-testid="product-image"], .product-image img',
-              )
-              .first()
-              .getAttribute("src")
-              .catch(() => null);
-            if (productImg) imageUrl = resolveUrl(productImg);
+          
+          const imgLocator = page
+            .locator('#product-images img[loading="lazy"]')
+            .first();
+
+          await imgLocator
+            .waitFor({ state: "visible", timeout: 5000 })
+            .catch(() => null);
+
+          const rawSrc = await imgLocator
+          .evaluate((el) => {
+          // srcset.split(",") breaks on Cloudinary URLs which contain commas
+          // inside transformation params (c_crop,ar_1920:2623,g_south/q_auto,f_auto...).
+          // Split on the descriptor pattern instead: whitespace + "400w," etc.
+          const srcset = el.getAttribute("srcset");
+          if (srcset) {
+            // Each entry ends with a width descriptor like "400w" or "1800w".
+            // Split on the boundary between descriptor and next URL: /\s+\d+w,?\s*/
+            const entries = srcset
+              .split(/\s+\d+w,?\s*/)
+              .map((s) => s.trim())
+              .filter((s) => s.startsWith("http"));
+            // Last entry is the highest resolution (1800w)
+            const best = entries[entries.length - 1];
+            if (best) return best;
+          }
+
+          // src is already a full Cloudinary URL on Aritzia — safe direct fallback
+          const src = el.getAttribute("src");
+          return src && !src.startsWith("data:") ? src : null;
+        })
+        .catch(() => null);
+
+          if (rawSrc && !rawSrc.startsWith("data:")) {
+            // Exclude base64 placeholder data URIs
+            imageUrl = resolveUrl(rawSrc);
           }
         }
-        if (imageUrl) console.log(`🖼️ [Scraper] Image: ${imageUrl}`);
-      } catch {
-        console.warn("⚠️ [Scraper] Could not extract product image");
       }
+
+      if (imageUrl) {
+        console.log(`🖼️ [Scraper] Image: ${imageUrl}`);
+      } else {
+        console.warn("⚠️ [Scraper] No image found via any selector");
+      }
+    } catch (err) {
+      console.warn("⚠️ [Scraper] Could not extract product image:", err);
+    }
+
 
       console.log("✅ [Scraper] Scrape completed successfully!");
       return { price: cleanPrice, imageUrl, title: productTitle };
