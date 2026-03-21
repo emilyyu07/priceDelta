@@ -174,3 +174,36 @@ export const clearStuckJobs = async (_req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    // Check if product exists
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        listings: true,
+        alerts: true,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Delete product (cascades to listings, price history, and alerts)
+    await prisma.product.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error: any) {
+    console.error("Delete Product Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};

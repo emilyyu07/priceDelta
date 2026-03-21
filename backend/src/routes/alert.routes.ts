@@ -12,6 +12,10 @@ const createAlertSchema = z.object({
   targetPrice: z.number().positive("Target price must be positive."),
 });
 
+const updateAlertSchema = z.object({
+  targetPrice: z.number().positive("Target price must be positive."),
+});
+
 // GET all alerts for the logged-in user
 router.get("/", protect, async (req: AuthRequest, res, next) => {
   try {
@@ -56,6 +60,50 @@ router.post(
       next(error);
     }
   },
+);
+
+// UPDATE an alert for the logged-in user
+router.patch(
+  "/:id",
+  protect,
+  validate(updateAlertSchema),
+  async (req: AuthRequest, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authorized, user not found" });
+      }
+      
+      const { id } = req.params;
+      const { targetPrice } = req.body;
+
+      if (!id || Array.isArray(id)) {
+        return res.status(400).json({ message: "Invalid alert ID" });
+      }
+
+      const existingAlert = await prisma.priceAlert.findUnique({
+        where: { id },
+      });
+
+      if (!existingAlert) {
+        return res.status(404).json({ message: "Alert not found" });
+      }
+
+      if (existingAlert.userId !== req.user.id) {
+        return res
+          .status(403)
+          .json({ message: "You are not authorized to update this alert" });
+      }
+
+      const updatedAlert = await prisma.priceAlert.update({
+        where: { id },
+        data: { targetPrice: new Decimal(targetPrice) },
+      });
+
+      res.json({ success: true, message: "Alert updated!", alert: updatedAlert });
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 // DELETE an alert for the logged-in user

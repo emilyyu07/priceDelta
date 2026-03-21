@@ -8,9 +8,17 @@ import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
 import { alertsApi } from '../api/alerts';
 import { useAuth } from '../hooks/useAuth';
-import type { Product, ProductListing, PriceHistory } from '../types'; 
+import type { Product, ProductListing } from '../types'; 
 
 type TimeRange = '7d' | '30d' | '90d' | 'all';
+
+interface DailyPriceData extends Record<string, number> {
+  _ts: number;
+}
+
+interface ChartDataPoint extends Record<string, number | string> {
+  date: string;
+}
 
 const TIME_RANGE_LABELS: Record<TimeRange, string> = {
   '7d': 'Last 7 Days',
@@ -112,7 +120,7 @@ const ProductDetailPage: React.FC = () => {
   );
 
   // Build a map: dateString → { retailerName → lowestPrice }
-  const dailyMap = new Map<string, Record<string, number>>();
+  const dailyMap = new Map<string, DailyPriceData>();
 
   for (const listing of listings) {
     const retailerName = listing.retailer?.name ?? 'Unknown';
@@ -124,7 +132,7 @@ const ProductDetailPage: React.FC = () => {
       const price = parseFloat(entry.price as string);
 
       if (!dailyMap.has(dateKey)) {
-        dailyMap.set(dateKey, { _ts: ts.getTime() } as any);
+        dailyMap.set(dateKey, { _ts: ts.getTime() });
       }
       const row = dailyMap.get(dateKey)!;
 
@@ -133,17 +141,17 @@ const ProductDetailPage: React.FC = () => {
         row[retailerName] = price;
       }
       // Store the raw timestamp for sorting
-      if (!(row as any)._ts || ts.getTime() < (row as any)._ts) {
-        (row as any)._ts = ts.getTime();
+      if (!row._ts || ts.getTime() < row._ts) {
+        row._ts = ts.getTime();
       }
     }
   }
 
   // Sort chronologically, then convert to chart-ready rows
-  const priceData = Array.from(dailyMap.entries())
-    .sort((a, b) => (a[1] as any)._ts - (b[1] as any)._ts)
+  const priceData: ChartDataPoint[] = Array.from(dailyMap.entries())
+    .sort((a, b) => a[1]._ts - b[1]._ts)
     .map(([date, values]) => {
-      const { _ts, ...retailerPrices } = values as any;
+      const { _ts, ...retailerPrices } = values;
       return { date, ...retailerPrices };
     });
 

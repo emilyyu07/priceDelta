@@ -20,4 +20,9 @@ export const productsApi = {
     const response = await apiClient.get(`/products/track/${listingId}/status`);
     return response.data;
   },
+  // delete a product
+  delete: async (productId: string) => {
+    const response = await apiClient.delete(`/products/${productId}`);
+    return response.data;
+  },
 };

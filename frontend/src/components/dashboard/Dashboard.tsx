@@ -54,7 +54,6 @@ const Dashboard = () => {
                 setActiveAlertsCount(0);
                 setPriceDropsCount(0);
                 setDealsNotifiedCount(0);
-            } finally {
             }
         };
         

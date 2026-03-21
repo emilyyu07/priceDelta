@@ -4,6 +4,7 @@ import {
   trackProduct,
   getQueueHealth,
   clearStuckJobs,
+  deleteProduct,
 } from "../controllers/product.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 import { validate } from "../middleware/validate.js";
@@ -142,6 +143,9 @@ router.get("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+// Delete a product (requires authentication)
+router.delete("/:id", protect, deleteProduct);
 
 // Debugging and monitoring endpoints
 router.get("/health", protect, getQueueHealth);

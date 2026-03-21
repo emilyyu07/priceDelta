@@ -5,13 +5,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   children,
   variant = 'primary',
   size = 'md',
   className,
   ...props
-}) => {
+}, ref) => {
   const baseStyles = 'font-semibold font-chic rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-300 hover:scale-105';
 
   const variantStyles = {
@@ -29,8 +29,10 @@ export const Button: React.FC<ButtonProps> = ({
   const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
   return (
-    <button className={combinedClassName} {...props}>
+    <button ref={ref} className={combinedClassName} {...props}>
       {children}
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';

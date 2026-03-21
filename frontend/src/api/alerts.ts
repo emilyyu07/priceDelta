@@ -37,6 +37,15 @@ export const alertsApi = {
     }
   },
 
+  update: async (alertId: string, data: { targetPrice: number }) => {
+    try {
+      const res = await apiClient.patch(`/alerts/${alertId}`, data);
+      return res.data;
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || "Failed to update alert.");
+    }
+  },
+
   delete: async (alertId: string) => {
     try {
       const res = await apiClient.delete(`/alerts/${alertId}`);
