@@ -1,4 +1,0 @@
-src/controllers/product.controller.ts(184,16): error TS2322: Type 'string | string[] | undefined' is not assignable to type 'string | undefined'.
-  Type 'string[]' is not assignable to type 'string'.
-src/controllers/product.controller.ts(197,16): error TS2322: Type 'string | string[] | undefined' is not assignable to type 'string | undefined'.
-  Type 'string[]' is not assignable to type 'string'.
